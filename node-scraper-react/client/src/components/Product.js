@@ -3,9 +3,8 @@ import React, { Component } from 'react';
 class Product extends React.Component {
 
     render() {
-    const {name, price, url, selector, date} = this.props.details;
+    const {name, price, url, selector, date, image} = this.props.details;
     const id = this.props.id;
-
     let singleProductList = {};
     singleProductList[this.props.id] = this.props.details;
     
@@ -13,6 +12,9 @@ class Product extends React.Component {
             <li>
                 key: {this.props.id} <br/>    
                 Name: {name} <br/>
+                {image !== undefined &&
+                    <img src={image} alt={name}/>
+                }
                 Price: {price} <br/>
                 Url: {url}<br/>
                 Selector: {selector}<br/>

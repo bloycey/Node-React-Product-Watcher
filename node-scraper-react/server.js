@@ -25,15 +25,16 @@ app.get('/', (req, res) => {
         const url = req.query.url;
         const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}
         const date = new Date().toLocaleString('en-AU', options);
-        let price;
+        let price, image;
 
         request(url, function(err, resp, html) {
             if (!err){
             const $ = cheerio.load(html);
             price = $(selector).text().replace('$', '');
+            image = $("meta[property='og:image']").attr("content");
             console.log(price);
             }
-            res.send({name, url, selector, price, date});
+            res.send({name, url, selector, price, date, image});
         });
 
        
