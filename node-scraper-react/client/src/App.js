@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AddProduct from "./components/AddProduct";
+import AddProductBasic from "./components/AddProductBasic";
 import Product from "./components/Product";
 import logo from './logo.svg';
 import './App.css';
@@ -61,6 +62,18 @@ class App extends Component {
     .catch(err => console.log(err));
   }
 
+  addProductBasic = (product) => {
+    this.callApi(`addproductbasic/${product.name}/?url=${product.url}`)
+    .then(res => {
+      console.log(res);
+      // const products = {...this.state.productList};
+      // products[`product${Date.now()}`] = res;
+      // this.setState({productList: products});
+    }
+    )
+    .catch(err => console.log(err));
+  }
+
   deleteProduct = (key) => {
     let products = {...this.state.productList};
     delete products[key];
@@ -93,6 +106,7 @@ class App extends Component {
       <div className="App">
       <br/>
       <br/>
+        <AddProductBasic addProduct={this.addProductBasic}/>
         <AddProduct addProduct={this.addProduct}/>
         <ul className="products test">
              {Object.keys(this.state.productList).map(key => (

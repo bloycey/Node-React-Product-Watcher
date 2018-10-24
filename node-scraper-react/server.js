@@ -35,9 +35,32 @@ app.get('/', (req, res) => {
             console.log(price);
             }
             res.send({name, url, selector, price, date, image});
-        });
+        }); 
+    })
 
-       
+    app.get('/api/addproductbasic/:name', (req, res) => {
+        const name = req.params.name;
+        const url = req.query.url;
+        console.log("url " + url)
+        const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}
+        const date = new Date().toLocaleString('en-AU', options);
+        let price, image, jsonld, metaprice, itemprop, all;
+
+        request(url, function(err, resp, html) {
+            if (!err){
+            const $ = cheerio.load(html);
+            jsonld = $("script[type='application/ld+json']").length
+            metaprice = $("meta[property='product:price:amount']").attr("content");
+            itemprop = $("[itemprop='price']").attr("content");
+            image = $("meta[property='og:image']").attr("content");
+            console.log($("meta[property='product:price:amount']").attr("content"))
+            console.log("jsonld " + jsonld)
+            console.log("metaprice " + metaprice)
+            console.log("itemprop " + itemprop)
+            console.log("image " + image);
+            }
+            res.send({jsonld, metaprice, itemprop, image});
+        }); 
     })
 
 
