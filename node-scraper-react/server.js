@@ -44,23 +44,29 @@ app.get('/', (req, res) => {
         console.log("url " + url)
         const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}
         const date = new Date().toLocaleString('en-AU', options);
-        let price, image, jsonld, jsonldlength, metaprice, itemprop, all;
+        const editMode = true;
+        let prices, image, jsonld, jsonldlength, metaprice, itemprop, all, pricesString;
 
         request(url, function(err, resp, html) {
             if (!err){
             const $ = cheerio.load(html);
-            jsonldlength = $("script[type='application/ld+json']").length;
-            jsonld = JSON.parse($("script[type='application/ld+json']")[0].children[0].data);
-            metaprice = $("meta[property='product:price:amount']").attr("content");
-            itemprop = $("[itemprop='price']").attr("content");
+            priceRegex = /\$[0-9\,\.]+/g;
+            prices = html.match(priceRegex);
+            console.log("prices", typeof prices, prices);
+            pricesString = JSON.stringify(prices);
+            console.log("pricesString", typeof pricesString, pricesString)
+            // jsonldlength = $("script[type='application/ld+json']").length;
+            // jsonld = JSON.parse($("script[type='application/ld+json']")[0].children[0].data);
+            // metaprice = $("meta[property='product:price:amount']").attr("content");
+            // itemprop = $("[itemprop='price']").attr("content");
             image = $("meta[property='og:image']").attr("content");
-            console.log($("meta[property='product:price:amount']").attr("content"))
-            console.log("jsonld " + jsonld + " typeof " + typeof jsonld);
-            console.log("metaprice " + metaprice)
-            console.log("itemprop " + itemprop)
-            console.log("image " + image);
+            // console.log($("meta[property='product:price:amount']").attr("content"))
+            // console.log("jsonld " + jsonld + " typeof " + typeof jsonld);
+            // console.log("metaprice " + metaprice)
+            // console.log("itemprop " + itemprop)
+            // console.log("image " + image);
             }
-            res.send({jsonldlength, jsonld, metaprice, itemprop, image});
+            res.send({prices, name, url, date, image, editMode});
         }); 
     })
 

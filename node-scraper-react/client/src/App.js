@@ -66,12 +66,26 @@ class App extends Component {
     this.callApi(`addproductbasic/${product.name}/?url=${product.url}`)
     .then(res => {
       console.log(res);
-      // const products = {...this.state.productList};
-      // products[`product${Date.now()}`] = res;
-      // this.setState({productList: products});
+      const products = {...this.state.productList};
+      products[`product${Date.now()}`] = res;
+      this.setState({productList: products});
     }
     )
     .catch(err => console.log(err));
+  }
+
+  setPrice = (setPrice, id, index) => {
+    let products = {...this.state.productList};
+    products[id].price = setPrice;
+    products[id].priceIndex = index;
+    products[id].editMode = false;
+    this.setState({productList: products});
+  }
+
+  toggleEditMode = (id) => {
+    let products = {...this.state.productList};
+    products[id].editMode = !products[id].editMode;
+    this.setState({productList: products});
   }
 
   deleteProduct = (key) => {
@@ -114,8 +128,10 @@ class App extends Component {
                 key={key}
                 id={key}
                 details={this.state.productList[key]}
+                setPrice={this.setPrice}
                 refreshProducts={this.refreshProducts}
                 deleteProduct = {this.deleteProduct}
+                toggleEditMode = {this.toggleEditMode}
               /> 
             ))} 
         </ul>
