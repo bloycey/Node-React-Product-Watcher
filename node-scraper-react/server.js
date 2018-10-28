@@ -38,35 +38,68 @@ app.get('/', (req, res) => {
         }); 
     })
 
-    app.get('/api/addproductbasic/:name', (req, res) => {
+    app.get('/api/addproductbasic/:name/:method', (req, res) => {
         const name = req.params.name;
+        const method = req.params.method;
         const url = req.query.url;
         console.log("url " + url)
         const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}
         const date = new Date().toLocaleString('en-AU', options);
         const editMode = true;
-        let prices, image, jsonld, jsonldlength, metaprice, itemprop, all, pricesString;
+        let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, metaprice, itemprop, all, pricesString;
 
         request(url, function(err, resp, html) {
-            if (!err){
+            if (!err){    
             const $ = cheerio.load(html);
-            priceRegex = /\$[0-9\,\.]+/g;
-            prices = html.match(priceRegex);
-            console.log("prices", typeof prices, prices);
-            pricesString = JSON.stringify(prices);
-            console.log("pricesString", typeof pricesString, pricesString)
-            // jsonldlength = $("script[type='application/ld+json']").length;
-            // jsonld = JSON.parse($("script[type='application/ld+json']")[0].children[0].data);
-            // metaprice = $("meta[property='product:price:amount']").attr("content");
-            // itemprop = $("[itemprop='price']").attr("content");
             image = $("meta[property='og:image']").attr("content");
-            // console.log($("meta[property='product:price:amount']").attr("content"))
-            // console.log("jsonld " + jsonld + " typeof " + typeof jsonld);
-            // console.log("metaprice " + metaprice)
-            // console.log("itemprop " + itemprop)
-            // console.log("image " + image);
-            }
+            //Method 1 - MetaData
+            if(method == 1) {
+                jsonld = [];
+                metaprice = [];
+                itemprop = [];
+
+                // 1.1 JSONLD
+
+                jsonldlength = $("script[type='application/ld+json']").length;
+                console.log(jsonldlength);
+                if (jsonldlength > 0) {
+                    //LOOP HERE AND PUSH PRICES TO ARRAY
+                    jsonld = $("script[type='application/ld+json']")[0].children[0].data;
+                }
+                console.log(jsonld)
+
+                // 1.2 Meta Price
+                metapricelength = $("meta[property='product:price:amount']").length;
+                console.log(`metaprice length: ${metapricelength}`)
+
+                if (metapricelength > 0 ) {
+                    // LOOP HERE AND PUSH PRICES TO ARRAY
+                    metaprice = $("meta[property='product:price:amount']").attr("content");
+                }
+
+                // 1.3 Itemprop Price
+                itemproplength = $("[itemprop='price']").length;
+                if (itemproplength > 0 ) {
+                   for (let i = 0; i < itemproplength; i++) {
+                       itemprop.push($("[itemprop='price']")[i].attribs.content)
+                   }
+                    console.log(itemprop);
+                }
+                
+
+                res.send({jsonld, metaprice, itemprop})
+
+            } else if (method == 2) {
+            //Method 2 - Regex price scraping
+                priceRegex = /\$[0-9\,\.]+/g;
+                prices = html.match(priceRegex);
+                pricesString = JSON.stringify(prices);
             res.send({prices, name, url, date, image, editMode});
+            } else if (method == 3) {
+            //Method 3 - Selector
+            }
+            }
+            
         }); 
     })
 

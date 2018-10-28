@@ -63,7 +63,7 @@ class App extends Component {
   }
 
   addProductBasic = (product) => {
-    this.callApi(`addproductbasic/${product.name}/?url=${product.url}`)
+    this.callApi(`addproductbasic/${product.name}/1/?url=${product.url}`)
     .then(res => {
       console.log(res);
       const products = {...this.state.productList};
@@ -106,6 +106,20 @@ class App extends Component {
     })  
   }
 
+  // Need to create a new server path for refreshing and only update the price on the server side. Maybe only pass the price too?
+  
+  refreshProductsRegex = (products) => {
+    Object.keys(products).map(key => {
+      const endPoint = `addproductbasic/${products[key].name}/?url=${products[key].url}`;
+      this.callApi(endPoint)
+      .then(res => {
+        const allProducts = {...this.state.productList};
+        allProducts[key] = res;
+        this.setState({productList: allProducts});
+      })
+    })  
+  }
+
   callApi = async (endpoint) => {
     const response = await fetch(`/api/${endpoint}`);
     const body = await response.json();
@@ -129,7 +143,7 @@ class App extends Component {
                 id={key}
                 details={this.state.productList[key]}
                 setPrice={this.setPrice}
-                refreshProducts={this.refreshProducts}
+                refreshProducts={this.refreshProductsRegex}
                 deleteProduct = {this.deleteProduct}
                 toggleEditMode = {this.toggleEditMode}
               /> 

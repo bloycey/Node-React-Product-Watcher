@@ -7,11 +7,13 @@ class Product extends React.Component {
     const id = this.props.id;
     let singleProductList = {};
     singleProductList[this.props.id] = this.props.details;
-    
-    
-    const pricelist = prices.map((price, index) =>
-        <button onClick={() => this.props.setPrice(price, this.props.id, index)} key={index}>{price}</button>
-    )
+    let pricelist = [];
+
+    if(prices !== undefined) {
+        pricelist = prices.map((price, index) =>
+            <button onClick={() => this.props.setPrice(price, this.props.id, index)} key={index}>{price}</button>
+        )
+    }
         return (
             <li>
                 {editMode == true &&
