@@ -52,6 +52,9 @@ app.get('/', (req, res) => {
             if (!err){    
             const $ = cheerio.load(html);
             image = $("meta[property='og:image']").attr("content");
+            const priceRegex = /\$[0-9\,\.]+/gm;
+            const jsonPriceRegex = /"price":[0-9\. ]+/gm;
+
             //Method 1 - MetaData
             if(method == 1) {
                 jsonld = [];
@@ -60,13 +63,15 @@ app.get('/', (req, res) => {
 
                 // 1.1 JSONLD
 
-                jsonldlength = $("script[type='application/ld+json']").length;
-                console.log(jsonldlength);
+                jsonldlength = $("script[type='application/ld+json']:contains('@Offer')").length;
+                
                 if (jsonldlength > 0) {
-                    //LOOP HERE AND PUSH PRICES TO ARRAY
-                    jsonld = $("script[type='application/ld+json']")[0].children[0].data;
+                    jsonldRaw = html.match(jsonPriceRegex);
+                    jsonldRaw.map(item => {
+                        jsonld.push(item.replace('"price":', ''));
+                    })
                 }
-                console.log(jsonld)
+                
 
                 // 1.2 Meta Price
                 metapricelength = $("meta[property='product:price:amount']").length;
@@ -79,6 +84,7 @@ app.get('/', (req, res) => {
 
                 // 1.3 Itemprop Price
                 itemproplength = $("[itemprop='price']").length;
+                console.log(`itemprop length: ${itemproplength}`)
                 if (itemproplength > 0 ) {
                    for (let i = 0; i < itemproplength; i++) {
                        itemprop.push($("[itemprop='price']")[i].attribs.content)
@@ -91,7 +97,6 @@ app.get('/', (req, res) => {
 
             } else if (method == 2) {
             //Method 2 - Regex price scraping
-                priceRegex = /\$[0-9\,\.]+/g;
                 prices = html.match(priceRegex);
                 pricesString = JSON.stringify(prices);
             res.send({prices, name, url, date, image, editMode});
