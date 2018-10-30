@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
         const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}
         const date = new Date().toLocaleString('en-AU', options);
         const editMode = true;
-        let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, metaprice, itemprop, all, pricesString;
+        let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString;
 
         request(url, function(err, resp, html) {
             if (!err){    
@@ -54,23 +54,23 @@ app.get('/', (req, res) => {
             image = $("meta[property='og:image']").attr("content");
             const priceRegex = /\$[0-9\,\.]+/gm;
             const jsonPriceRegex = /"price":[0-9\. ]+/gm;
+            console.log(resp.statusCode)
 
             //Method 1 - MetaData
             if(method == 1) {
                 jsonld = [];
                 metaprice = [];
                 itemprop = [];
+                genericMeta = [];
 
                 // 1.1 JSONLD
-
-                jsonldlength = $("script[type='application/ld+json']:contains('@Offer')").length;
                 
-                if (jsonldlength > 0) {
-                    jsonldRaw = html.match(jsonPriceRegex);
-                    jsonldRaw.map(item => {
-                        jsonld.push(item.replace('"price":', ''));
-                    })
-                }
+                    jsonldRaw = html.match(jsonPriceRegex) || [];
+                    if (jsonldRaw.length > 0) {
+                        jsonldRaw.map(item => {
+                            jsonld.push(item.replace('"price":', ''));
+                        })
+                    }
                 
 
                 // 1.2 Meta Price
@@ -79,7 +79,9 @@ app.get('/', (req, res) => {
 
                 if (metapricelength > 0 ) {
                     // LOOP HERE AND PUSH PRICES TO ARRAY
-                    metaprice = $("meta[property='product:price:amount']").attr("content");
+                    // for (let i = 0; i < metapricelength; i++) {
+                        metaprice.push($("meta[property='product:price:amount']").attr("content"));
+                    // }
                 }
 
                 // 1.3 Itemprop Price
@@ -87,13 +89,26 @@ app.get('/', (req, res) => {
                 console.log(`itemprop length: ${itemproplength}`)
                 if (itemproplength > 0 ) {
                    for (let i = 0; i < itemproplength; i++) {
-                       itemprop.push($("[itemprop='price']")[i].attribs.content)
+                       itemprop.push($("[itemprop='price']")[i].attribs.content);
+                       console.log($("[itemprop]='price']").html());
                    }
                     console.log(itemprop);
                 }
+
+                // 1.4 Generic Meta
+
+                genericMetaLength = $("meta[property='price']").length;
+
+                if (genericMetaLength > 0 ) {
+                    // LOOP HERE AND PUSH PRICES TO ARRAY
+                    for (let i = 0; i < genericMetaLength; i++) {
+                        genericMeta.push($("meta[property='price']")[i].attribs.content);
+                    }
+                }
+                
                 
 
-                res.send({jsonld, metaprice, itemprop})
+                res.send({jsonld, metaprice, itemprop, genericMeta})
 
             } else if (method == 2) {
             //Method 2 - Regex price scraping
