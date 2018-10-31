@@ -66,6 +66,9 @@ class App extends Component {
     this.callApi(`addproductbasic/${product.name}/1/?url=${product.url}`)
     .then(res => {
       console.log(res);
+      if (res.status !== 200) {
+        console.log(`Scrape Failed: Error ${res.status}`);
+      }
       const products = {...this.state.productList};
       products[`product${Date.now()}`] = res;
       this.setState({productList: products});

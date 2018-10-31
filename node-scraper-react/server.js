@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
         const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}
         const date = new Date().toLocaleString('en-AU', options);
         const editMode = true;
-        let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString;
+        let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString, status;
 
         request(url, function(err, resp, html) {
             if (!err){    
@@ -55,6 +55,11 @@ app.get('/', (req, res) => {
             const priceRegex = /\$[0-9\,\.]+/gm;
             const jsonPriceRegex = /"price":[0-9\. ]+/gm;
             console.log(resp.statusCode)
+            status = resp.statusCode;
+
+
+            //CITY BEACH - https://www.citybeach.com.au/womens/dunia-skirt
+            //ld+json check.
 
             //Method 1 - MetaData
             if(method == 1) {
@@ -79,20 +84,21 @@ app.get('/', (req, res) => {
 
                 if (metapricelength > 0 ) {
                     // LOOP HERE AND PUSH PRICES TO ARRAY
-                    // for (let i = 0; i < metapricelength; i++) {
-                        metaprice.push($("meta[property='product:price:amount']").attr("content"));
-                    // }
+                    for (let i = 0; i < metapricelength; i++) {
+                        metaprice.push($("meta[property='product:price:amount']")[i].attribs.content);
+                    }
                 }
 
                 // 1.3 Itemprop Price
                 itemproplength = $("[itemprop='price']").length;
-                console.log(`itemprop length: ${itemproplength}`)
-                if (itemproplength > 0 ) {
-                   for (let i = 0; i < itemproplength; i++) {
-                       itemprop.push($("[itemprop='price']")[i].attribs.content);
-                       console.log($("[itemprop]='price']").html());
-                   }
-                    console.log(itemprop);
+                console.log(`itemprop length: ${itemproplength}`);
+                if (itemproplength > 0) {
+                    for (let i = 0; i < itemproplength; i++) {
+                        itemprop.push($("[itemprop='price']")[i].attribs.content);
+                        if ($("[itemprop='price']")[i].children[0] !== undefined) {
+                            itemprop.push($("[itemprop='price']")[i].children[0].data);
+                        }
+                    }
                 }
 
                 // 1.4 Generic Meta
@@ -105,10 +111,8 @@ app.get('/', (req, res) => {
                         genericMeta.push($("meta[property='price']")[i].attribs.content);
                     }
                 }
-                
-                
 
-                res.send({jsonld, metaprice, itemprop, genericMeta})
+                res.send({jsonld, metaprice, itemprop, genericMeta, status})
 
             } else if (method == 2) {
             //Method 2 - Regex price scraping
