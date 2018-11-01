@@ -7,6 +7,33 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 // Do work here
+
+
+//Utility functions
+
+const sanitizeArray = (array) => {
+    // Remove null values
+    let filtered = array.filter((value) => {
+        return value != null && value != "";
+    })
+
+    // Remove blank spaces
+    let trimmed = filtered.map(value => {
+        return value.trim();
+    })
+
+    // Remove dollar signs
+    let dollarSignRemoved = trimmed.map(value => {
+        return value.replace("$", "");
+    })
+    
+    let removeEmpty = dollarSignRemoved.filter((value) => {
+        return value != "";
+    })
+    return removeEmpty; 
+}
+
+
 app.get('/', (req, res) => {
     res.send('Hey! It works!');
   });
@@ -53,13 +80,9 @@ app.get('/', (req, res) => {
             const $ = cheerio.load(html);
             image = $("meta[property='og:image']").attr("content");
             const priceRegex = /\$[0-9\,\.]+/gm;
-            const jsonPriceRegex = /"price":[0-9\. ]+/gm;
+            const jsonPriceRegex = /("price":|'price':)[0-9\."' ]+/gm;
             console.log(resp.statusCode)
             status = resp.statusCode;
-
-
-            //CITY BEACH - https://www.citybeach.com.au/womens/dunia-skirt
-            //ld+json check.
 
             //Method 1 - MetaData
             if(method == 1) {
@@ -71,10 +94,13 @@ app.get('/', (req, res) => {
                 // 1.1 JSONLD
                 
                     jsonldRaw = html.match(jsonPriceRegex) || [];
+                    console.log(`jsonldRaw: ${jsonldRaw}`);
+                    console.log(typeof jsonldRaw);
                     if (jsonldRaw.length > 0) {
-                        jsonldRaw.map(item => {
-                            jsonld.push(item.replace('"price":', ''));
-                        })
+                        Object.values(jsonldRaw).map(value => {
+                            //Remove everything except for floating point numbers
+                            jsonld.push(value.replace(/[^\d.-]/g, ''));
+                        });
                     }
                 
 
@@ -94,12 +120,22 @@ app.get('/', (req, res) => {
                 console.log(`itemprop length: ${itemproplength}`);
                 if (itemproplength > 0) {
                     for (let i = 0; i < itemproplength; i++) {
+                        //First look for the content attribute
                         itemprop.push($("[itemprop='price']")[i].attribs.content);
+                        // Then look for the price directly within the itemprop tag;
                         if ($("[itemprop='price']")[i].children[0] !== undefined) {
                             itemprop.push($("[itemprop='price']")[i].children[0].data);
                         }
+                        //Next Look for a span within the itemprop (this is a common pattern);
+                        if($("[itemprop='price']")[i].children[0].next !== null) {
+                            if ($("[itemprop='price']")[i].children[0].next.name == 'span') {
+                                itemprop.push($("[itemprop='price']")[i].children[0].next.children[0].data)
+                            }
+                        }
                     }
-                }
+                } 
+
+                itemprop = sanitizeArray(itemprop);
 
                 // 1.4 Generic Meta
 
