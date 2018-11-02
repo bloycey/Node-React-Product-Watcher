@@ -6,10 +6,11 @@ const routes = require('./routes/index');
 const port = process.env.PORT || 5000;
 const app = express();
 
-// Do work here
-
 
 //Utility functions
+
+const priceRegex = /\$[0-9\,\.]+/gm;
+const jsonPriceRegex = /("price":|'price':)[0-9\."', ]+/gm;
 
 const sanitizeArray = (array) => {
     // Remove null values
@@ -33,6 +34,68 @@ const sanitizeArray = (array) => {
     return removeEmpty; 
 }
 
+//Scraping Methods
+
+const scrapeJson = (source, regex) => {
+    let jsonFinal = []
+    const jsonRaw = source.match(regex) || [];
+    if (jsonRaw.length > 0) {
+        Object.values(jsonRaw).map(value => {
+            //Remove everything except for floating point numbers
+            jsonFinal.push(value.replace(/[^\d.-]/g, ''));
+        });
+    }
+    return jsonFinal;
+}
+
+const scrapeMeta = (selector) => {
+    const metapricelength = selector.length;
+    let metaFinal = []
+    if (metapricelength > 0 ) {
+        // LOOP HERE AND PUSH PRICES TO ARRAY
+        for (let i = 0; i < metapricelength; i++) {
+            metaFinal.push(selector[i].attribs.content);
+        }
+    }
+    return metaFinal;
+}
+
+const scrapeItemprop = (selector) => {
+    const itemproplength = selector.length;
+    let itempropArray = [];
+
+    if (itemproplength > 0) {
+        for (let i = 0; i < itemproplength; i++) {
+            //First look for the content attribute
+            itempropArray.push(selector[i].attribs.content);
+            // Then look for the price directly within the itemprop tag;
+            if (selector[i].children[0] !== undefined) {
+                itempropArray.push(selector[i].children[0].data);
+            }
+            //Next Look for a span within the itemprop (this is a common pattern);
+            if(selector[i].children[0].next !== null) {
+                if (selector[i].children[0].next.name == 'span') {
+                    itempropArray.push(selector[i].children[0].next.children[0].data)
+                }
+            }
+        } 
+    }
+    return itempropArray; 
+}
+
+const scrapeGenericMeta = (selector) => {
+    const genericMetaLength = selector.length;
+    let genericMetaRaw = [];
+    if (genericMetaLength > 0 ) {
+        // LOOP HERE AND PUSH PRICES TO ARRAY
+        for (let i = 0; i < genericMetaLength; i++) {
+            genericMetaRaw.push(selector[i].attribs.content);
+        }
+    }
+    return genericMetaRaw;
+}
+
+///
 
 app.get('/', (req, res) => {
     res.send('Hey! It works!');
@@ -79,85 +142,38 @@ app.get('/', (req, res) => {
             if (!err){    
             const $ = cheerio.load(html);
             image = $("meta[property='og:image']").attr("content");
-            const priceRegex = /\$[0-9\,\.]+/gm;
-            const jsonPriceRegex = /("price":|'price':)[0-9\."' ]+/gm;
-            console.log(resp.statusCode)
             status = resp.statusCode;
 
-            //Method 1 - MetaData
-            if(method == 1) {
-                jsonld = [];
-                metaprice = [];
-                itemprop = [];
-                genericMeta = [];
+                //Method 1 - MetaData
+                if(method == 1) {
+                    
+                    jsonld = [];
+                    metaprice = [];
+                    itemprop = [];
+                    genericMeta = [];
 
-                // 1.1 JSONLD
-                
-                    jsonldRaw = html.match(jsonPriceRegex) || [];
-                    console.log(`jsonldRaw: ${jsonldRaw}`);
-                    console.log(typeof jsonldRaw);
-                    if (jsonldRaw.length > 0) {
-                        Object.values(jsonldRaw).map(value => {
-                            //Remove everything except for floating point numbers
-                            jsonld.push(value.replace(/[^\d.-]/g, ''));
-                        });
-                    }
-                
+                    // 1.1 JSONLD
+                    jsonld = scrapeJson(html, jsonPriceRegex);
 
-                // 1.2 Meta Price
-                metapricelength = $("meta[property='product:price:amount']").length;
-                console.log(`metaprice length: ${metapricelength}`)
+                    // 1.2 Meta Price (using the facebook meta recommendations)
+                    metaprice = scrapeMeta($("meta[property='product:price:amount']"));
 
-                if (metapricelength > 0 ) {
-                    // LOOP HERE AND PUSH PRICES TO ARRAY
-                    for (let i = 0; i < metapricelength; i++) {
-                        metaprice.push($("meta[property='product:price:amount']")[i].attribs.content);
-                    }
-                }
+                    // 1.3 Itemprop Price
+                    let itempropRaw = scrapeItemprop($("[itemprop='price']"));
+                    itemprop = sanitizeArray(itempropRaw);
 
-                // 1.3 Itemprop Price
-                itemproplength = $("[itemprop='price']").length;
-                console.log(`itemprop length: ${itemproplength}`);
-                if (itemproplength > 0) {
-                    for (let i = 0; i < itemproplength; i++) {
-                        //First look for the content attribute
-                        itemprop.push($("[itemprop='price']")[i].attribs.content);
-                        // Then look for the price directly within the itemprop tag;
-                        if ($("[itemprop='price']")[i].children[0] !== undefined) {
-                            itemprop.push($("[itemprop='price']")[i].children[0].data);
-                        }
-                        //Next Look for a span within the itemprop (this is a common pattern);
-                        if($("[itemprop='price']")[i].children[0].next !== null) {
-                            if ($("[itemprop='price']")[i].children[0].next.name == 'span') {
-                                itemprop.push($("[itemprop='price']")[i].children[0].next.children[0].data)
-                            }
-                        }
-                    }
+                    // 1.4 Generic Meta
+                    genericMeta = scrapeGenericMeta($("meta[property='price']"))
+
+                    res.send({jsonld, metaprice, itemprop, genericMeta, status})
+
+                } else if (method == 2) {
+                //This is where the updating of prices will happen
+                //Need to substitute "method" for "function" (get/update)
+                    prices = html.match(priceRegex);
+                    pricesString = JSON.stringify(prices);
+                    res.send({prices, name, url, date, image, editMode});
                 } 
-
-                itemprop = sanitizeArray(itemprop);
-
-                // 1.4 Generic Meta
-
-                genericMetaLength = $("meta[property='price']").length;
-
-                if (genericMetaLength > 0 ) {
-                    // LOOP HERE AND PUSH PRICES TO ARRAY
-                    for (let i = 0; i < genericMetaLength; i++) {
-                        genericMeta.push($("meta[property='price']")[i].attribs.content);
-                    }
-                }
-
-                res.send({jsonld, metaprice, itemprop, genericMeta, status})
-
-            } else if (method == 2) {
-            //Method 2 - Regex price scraping
-                prices = html.match(priceRegex);
-                pricesString = JSON.stringify(prices);
-            res.send({prices, name, url, date, image, editMode});
-            } else if (method == 3) {
-            //Method 3 - Selector
-            }
             }
             
         }); 
