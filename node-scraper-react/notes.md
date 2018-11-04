@@ -1,3 +1,0 @@
-- run "yarn dev" in the home directory to start.
-- turn "#" into "%23" to send to server.
-- Amazon selector is "#priceblock_dealprice"

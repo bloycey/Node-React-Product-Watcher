@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import AddProduct from "./components/AddProduct";
 import AddProductBasic from "./components/AddProductBasic";
 import Product from "./components/Product";
 import logo from './logo.svg';
 import './App.css';
+const { ipcRenderer } = window.require('electron');
 
 class App extends Component {
   state = {
@@ -16,6 +16,24 @@ class App extends Component {
   componentDidMount() {
     this.loadFromLocal();
     window.addEventListener("beforeunload", (this.saveStateToLocalStorage.bind(this)))
+    ipcRenderer.on('product-price', (event, data) => {
+      if (data.status == 200) {
+        console.log(data);
+        const products = {...this.state.productList};
+        products[`product${Date.now()}`] = data;
+        this.setState({productList: products});
+      } else {
+        console.log("This website cannot be scraped")
+      }
+    })
+    ipcRenderer.on('price-updated', (event, id, data, date) => {
+      console.log("update request", id, data);
+      const allProducts = {...this.state.productList};
+      allProducts[id].price = data;
+      allProducts[id].date = date;
+      this.setState({productList: allProducts});
+    })
+
   }
  
   componentWillUnmount() {
@@ -45,11 +63,6 @@ class App extends Component {
     }
   }
 
-  testFunction = () => {
-    this.callApi("test")
-    .then(res => console.log(res.test))
-    .catch(err => console.log(err));
-  }
 
   addProduct = (product) => {
     this.callApi(`addproduct/${product.name}/${product.selector}/?url=${product.url}`)
@@ -63,23 +76,13 @@ class App extends Component {
   }
 
   addProductBasic = (product) => {
-    this.callApi(`addproductbasic/${product.name}/1/?url=${product.url}`)
-    .then(res => {
-      console.log(res);
-      if (res.status !== 200) {
-        console.log(`Scrape Failed: Error ${res.status}`);
-      }
-      const products = {...this.state.productList};
-      products[`product${Date.now()}`] = res;
-      this.setState({productList: products});
-    }
-    )
-    .catch(err => console.log(err));
+    ipcRenderer.send('add-product', product.name, product.url);
   }
 
-  setPrice = (setPrice, id, index) => {
+  setPrice = (setPrice, id, type, index) => {
     let products = {...this.state.productList};
     products[id].price = setPrice;
+    products[id].type = type;
     products[id].priceIndex = index;
     products[id].editMode = false;
     this.setState({productList: products});
@@ -99,37 +102,25 @@ class App extends Component {
 
   refreshProducts = (products) => {
     Object.keys(products).map(key => {
-      const endPoint = `addproduct/${products[key].name}/${products[key].selector.replace('#', '%23')}/?url=${products[key].url}`;
-      this.callApi(endPoint)
-      .then(res => {
-        const allProducts = {...this.state.productList};
-        allProducts[key] = res;
-        this.setState({productList: allProducts});
-      })
+      console.log("full product", products[key]);
+      console.log("products type", products[key].type);
+      let productToRefresh = {
+        "productName": products[key].productName,
+        "url": products[key].url,
+        "id": products[key].id,
+        "type": products[key].type, 
+        "priceIndex": products[key].priceIndex
+      }
+      ipcRenderer.send('update-product', productToRefresh)
+      // const endPoint = `addproduct/${products[key].name}/${products[key].selector.replace('#', '%23')}/?url=${products[key].url}`;
+      // this.callApi(endPoint)
+      // .then(res => {
+      //   const allProducts = {...this.state.productList};
+      //   allProducts[key] = res;
+      //   this.setState({productList: allProducts});
+      // })
     })  
-  }
-
-  // Need to create a new server path for refreshing and only update the price on the server side. Maybe only pass the price too?
-  
-  refreshProductsRegex = (products) => {
-    Object.keys(products).map(key => {
-      const endPoint = `addproductbasic/${products[key].name}/?url=${products[key].url}`;
-      this.callApi(endPoint)
-      .then(res => {
-        const allProducts = {...this.state.productList};
-        allProducts[key] = res;
-        this.setState({productList: allProducts});
-      })
-    })  
-  }
-
-  callApi = async (endpoint) => {
-    const response = await fetch(`/api/${endpoint}`);
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    return body;
-  };
-
+  }  
 
 
   render() {
@@ -138,7 +129,6 @@ class App extends Component {
       <br/>
       <br/>
         <AddProductBasic addProduct={this.addProductBasic}/>
-        <AddProduct addProduct={this.addProduct}/>
         <ul className="products test">
              {Object.keys(this.state.productList).map(key => (
               <Product
@@ -146,7 +136,7 @@ class App extends Component {
                 id={key}
                 details={this.state.productList[key]}
                 setPrice={this.setPrice}
-                refreshProducts={this.refreshProductsRegex}
+                refreshProducts={this.refreshProducts}
                 deleteProduct = {this.deleteProduct}
                 toggleEditMode = {this.toggleEditMode}
               /> 
