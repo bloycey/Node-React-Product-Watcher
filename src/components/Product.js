@@ -13,7 +13,7 @@ class Product extends React.Component {
     const metapricelength = metaprice.length;
     const itemproplength = itemprop.length;
     const genericmetalength = genericMeta.length;
-
+    if (editMode) {
         return (
             <li>
                 key: {id} <br/>    
@@ -49,6 +49,7 @@ class Product extends React.Component {
                 {genericmetalength == 0 &&
                     <span>No generic meta details found</span>
                 }
+
                 <br/>
                 Last Updated: {date} <br/>
                 <button onClick={() => this.props.refreshProducts(singleProductList)}>Refresh</button>
@@ -56,6 +57,19 @@ class Product extends React.Component {
                 <button onClick={() => this.props.toggleEditMode(id)}>Toggle Edit Panel</button>
             </li>         
         );
+    } else {
+        return (
+            <li>
+                Name: {productName} <br/>
+                Url: {url}<br/>
+                Price: {price}<br/>
+                Last Updated: {date} <br/>
+                <button onClick={() => this.props.refreshProducts(singleProductList)}>Refresh</button>
+                <button onClick={() => this.props.deleteProduct(id)}>Delete Product</button>
+                <button onClick={() => this.props.toggleEditMode(id)}>Toggle Edit Panel</button>
+            </li>   
+        );
+    }
     }
 }
 
