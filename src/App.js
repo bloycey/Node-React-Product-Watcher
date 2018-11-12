@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import AddProductBasic from "./components/AddProductBasic";
+import OuterGrid from "./components/OuterGrid";
 import Product from "./components/Product";
 import logo from './logo.svg';
 import './App.css';
@@ -124,11 +128,14 @@ class App extends Component {
 
 
   render() {
+
+    
     return (
+      
       <div className="App">
       <br/>
       <br/>
-        <AddProductBasic addProduct={this.addProductBasic}/>
+      <OuterGrid addProduct={this.addProductBasic}/>
         <ul className="products test">
              {Object.keys(this.state.productList).map(key => (
               <Product
