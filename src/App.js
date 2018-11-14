@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import AddProductBasic from "./components/AddProductBasic";
-import OuterGrid from "./components/OuterGrid";
+import ProductStepper from "./components/ProductStepper";
 import Product from "./components/Product";
 import logo from './logo.svg';
 import './App.css';
@@ -116,13 +112,6 @@ class App extends Component {
         "priceIndex": products[key].priceIndex
       }
       ipcRenderer.send('update-product', productToRefresh)
-      // const endPoint = `addproduct/${products[key].name}/${products[key].selector.replace('#', '%23')}/?url=${products[key].url}`;
-      // this.callApi(endPoint)
-      // .then(res => {
-      //   const allProducts = {...this.state.productList};
-      //   allProducts[key] = res;
-      //   this.setState({productList: allProducts});
-      // })
     })  
   }  
 
@@ -133,9 +122,9 @@ class App extends Component {
     return (
       
       <div className="App">
+      <ProductStepper addProduct={this.addProductBasic}/>
       <br/>
       <br/>
-      <OuterGrid addProduct={this.addProductBasic}/>
         <ul className="products test">
              {Object.keys(this.state.productList).map(key => (
               <Product

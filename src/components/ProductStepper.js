@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import ProductForm from "./ProductForm";
+import ProductForm from "./FormComponents/ProductForm";
 import { withStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -31,7 +31,7 @@ const styles = theme => ({
   }
 
 
-class AddProductBasic extends React.Component {
+class ProductStepper extends React.Component {
 
     state = {
         activeStep: 0,
@@ -124,8 +124,8 @@ class AddProductBasic extends React.Component {
     }
 }
 
-AddProductBasic.propTypes = {
+ProductStepper.propTypes = {
     classes: PropTypes.object,
   };
 
-export default  withStyles(styles)(AddProductBasic);
+export default  withStyles(styles)(ProductStepper);
