@@ -100,13 +100,14 @@ class ProductStepper extends React.Component {
                   <Typography>{this.getStepContent(index)}</Typography>
                   <div className={classes.actionsContainer}>
                     <div>
+                    {activeStep !== 0 &&
                       <Button
-                        disabled={activeStep === 0}
                         onClick={this.handleBack}
                         className={classes.button}
                       >
                         Back
                       </Button>
+                    }
                       <Button
                         variant="contained"
                         color="primary"

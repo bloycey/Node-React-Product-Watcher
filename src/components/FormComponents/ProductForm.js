@@ -1,25 +1,34 @@
 import React, { Component } from 'react';
+import TextField from '@material-ui/core/TextField';
 
 class ProductForm extends React.Component {
 
-nameRef = React.createRef();
-urlRef = React.createRef();
+state = {
+    productName: '',
+    productUrl: ''
+}
+
+handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
+  };
 
 createProduct = (event) => {
     event.preventDefault();
     const product = {
-        name: this.nameRef.current.value,
-        url: this.urlRef.current.value,
+        name: this.state.productName,
+        url: this.state.productUrl,
     }
     this.props.addProduct(product);
-    // event.currentTarget.reset();
 }
 
     render(){
+
         return(
         <form className="add-product-form" onSubmit={this.createProduct}>
-            <input name="name" ref={this.nameRef} type="text" placeholder="Product Name" />
-            <input name="url" ref={this.urlRef} type="text" placeholder="Product URL" />
+            <TextField ref={this.nameRef} id="filled-name" label="Product Name" margin="normal" variant="filled" onChange={this.handleChange('productName')}/>
+            <TextField ref={this.urlRef} id="filled-url" label="Product URL" margin="normal" variant="filled" onChange={this.handleChange('productUrl')}/> 
             <button type="submit">+ Add Product</button>
         </form>
         )
