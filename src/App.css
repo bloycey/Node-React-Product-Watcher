@@ -40,3 +40,9 @@ body {
 #addproduct-wrapper {
   width: 100%;
 }
+
+.price-paper {
+  width: 125px;
+  display: inline-block;
+  margin: 8px;
+}

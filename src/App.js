@@ -10,7 +10,8 @@ class App extends Component {
     productList: {},
     numOfItems: 0,
     history: [],
-    response: ''
+    response: '',
+    currentItem: ''
   };
 
   componentDidMount() {
@@ -20,7 +21,9 @@ class App extends Component {
       if (data.status == 200) {
         console.log(data);
         const products = {...this.state.productList};
-        products[`product${Date.now()}`] = data;
+        let dateString = `product${Date.now()}`;
+        products[dateString] = data;
+        this.setState({currentItem: products[dateString]});
         this.setState({productList: products});
       } else {
         console.log("This website cannot be scraped")
@@ -122,7 +125,7 @@ class App extends Component {
     return (
       
       <div className="App">
-      <ProductStepper addProduct={this.addProductBasic}/>
+      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice}/>
       <br/>
       <br/>
         <ul className="products test">

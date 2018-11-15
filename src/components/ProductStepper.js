@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ProductForm from "./FormComponents/ProductForm";
+import Options from "./FormComponents/Options";
 import { withStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -30,6 +31,8 @@ const styles = theme => ({
     return ["Enter product's name and URL", "Choose the price to watch", "Configure options"];
   }
 
+ 
+
 
 class ProductStepper extends React.Component {
 
@@ -37,12 +40,20 @@ class ProductStepper extends React.Component {
         activeStep: 0,
       };
 
+      componentDidUpdate(prevProps) {
+        if(this.props.currentItem.id !== prevProps.currentItem.id) {
+          this.setState({
+            activeStep: 1
+          })
+        }
+      }
+
       getStepContent = (step) => {
         switch (step) {
           case 0:
             return <ProductForm addProduct={this.props.addProduct}/>;
           case 1:
-            return 'An ad group contains one or more ads which target a shared set of keywords.';
+            return <Options currentItem={this.props.currentItem} setPrice={this.props.setPrice}/>
           case 2:
             return `Try out different ad text to see what brings in the most customers,
                     and learn how to enhance your ads using features like ad extensions.
