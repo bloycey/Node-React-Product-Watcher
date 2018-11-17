@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import styled from "styled-components";
 import ProductStepper from "./components/ProductStepper";
 import Product from "./components/Product";
 import logo from './logo.svg';
-import './App.css';
 const { ipcRenderer } = window.require('electron');
 
 class App extends Component {
@@ -119,12 +119,21 @@ class App extends Component {
   }  
 
 
-  render() {
+
+render() {
+
+const AppWrapper = styled.div`
+    text-align: center;
+    min-height: 100vh;
+    background-color: #eeeeee;
+`;
+
+
 
     
     return (
       
-      <div className="App">
+      <AppWrapper>
       <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice}/>
       <br/>
       <br/>
@@ -142,7 +151,7 @@ class App extends Component {
             ))} 
         </ul>
         <button onClick={() => this.refreshProducts(this.state.productList)}>Refresh All</button>
-      </div>
+        </AppWrapper>
     );
   }
 }
