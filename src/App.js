@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import ProductStepper from "./components/ProductStepper";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import blue from '@material-ui/core/colors/blue';
 import Product from "./components/Product";
-import logo from './logo.svg';
 import './App.css'
 const { ipcRenderer } = window.require('electron');
 
@@ -18,6 +18,9 @@ const theme = createMuiTheme({
       '"Helvetica Neue"',
     ].join(','),
   },
+  palette: {
+    primary: blue,
+  }
 });
 
 class App extends Component {
@@ -36,11 +39,9 @@ class App extends Component {
     ipcRenderer.on('product-price', (event, data) => {
       if (data.status == 200) {
         console.log(data);
-        const products = {...this.state.productList};
-        let dateString = `product${Date.now()}`;
-        products[dateString] = data;
-        this.setState({currentItem: products[dateString]});
-        this.setState({productList: products});
+        this.setState({
+          currentItem: data,
+        })
       } else {
         console.log("This website cannot be scraped")
       }
@@ -82,32 +83,37 @@ class App extends Component {
     }
   }
 
-
-  addProduct = (product) => {
-    this.callApi(`addproduct/${product.name}/${product.selector}/?url=${product.url}`)
-    .then(res => {
-      const products = {...this.state.productList};
-      products[`product${Date.now()}`] = res;
-      this.setState({productList: products});
-    }
-    )
-    .catch(err => console.log(err));
-  }
+  // addProduct = (product) => {
+  //   this.callApi(`addproduct/${product.name}/${product.selector}/?url=${product.url}`)
+  //   .then(res => {
+  //     this.setState({
+  //       currentItem: res,
+  //     })
+  //   }
+  //   )
+  //   .catch(err => console.log(err));
+  // }
 
   addProductBasic = (product) => {
     ipcRenderer.send('add-product', product.name, product.url);
   }
 
   setPrice = (setPrice, id, type, index) => {
+    let current = {...this.state.currentItem};
+    current.price = setPrice;
+    current.type = type;
+    current.priceIndex = index;
+    this.setState({
+      currentItem: current,
+    });
+  }
+
+  saveCurrent = () => {
     let products = {...this.state.productList};
-    products[id].price = setPrice;
-    products[id].type = type;
-    products[id].priceIndex = index;
-    products[id].editMode = false;
+    products[`product${Date.now()}`] = this.state.currentItem;
     this.setState({
       productList: products,
-    });
-
+    })
   }
 
   toggleEditMode = (id) => {
@@ -145,7 +151,7 @@ render() {
       
       <MuiThemeProvider theme={theme}>
       <section className="app-wrapper">
-      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice}/>
+      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent}/>
       <br/>
       <br/>
         <ul className="products test">

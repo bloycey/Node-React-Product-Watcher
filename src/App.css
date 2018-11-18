@@ -1,5 +1,6 @@
 * {
     font-family: 'Fira Sans', sans-serif;
+    font-size: 16px;
 }
 
 .input-wrapper {
@@ -17,6 +18,14 @@
     width: 125px;
     display: inline-block;
     margin: 8px;
+    padding: 15px;
+    border: 1px solid #f6f6f6;
+    /* transition: all 0.3s ease; */
+    cursor: pointer;
+}
+
+.price-paper:hover, .price-paper.active {
+    border: 1px solid #2196f3;
 }
 
 .app-wrapper {
@@ -28,4 +37,20 @@
 .add-product-wrapper {
     width: 80%;
     margin-left: 10%;
+}
+
+.step-title {
+    font-size: 16px;
+}
+
+.price-type {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+.product-price {
+    font-size: 32px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-bottom: 0px;
 }

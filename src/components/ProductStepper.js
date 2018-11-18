@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import '../App.css';
 
 function getSteps() {
-  return ["Enter product name and URL", "Choose the price to watch", "Configure options"];
+  return [<span className='step-title'>Enter product name and URL</span>, <span className='step-title'>Choose the price to watch</span>, <span className='step-title'>Configure options</span>];
 }
 
 class ProductStepper extends React.Component {
@@ -22,11 +22,12 @@ class ProductStepper extends React.Component {
 
       componentDidUpdate(prevProps) {
         console.log("updated productStepper")
-        if(this.props.currentItem.id !== prevProps.currentItem.id) {
-          this.setState({
-            activeStep: 1
-          })
-        }
+        // if(this.props.currentItem.id !== prevProps.currentItem.id) {
+        //   this.setState({
+        //     activeStep: 1
+        //   })
+        // }
+
       }
 
       componentDidMount() {
@@ -42,12 +43,11 @@ class ProductStepper extends React.Component {
           case 0:
             return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext}/>;
           case 1:
-            return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice}/>
+              return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice}/>;
           case 2:
-            return `Try out different ad textasd to see what brings in the most customers,
-                    and learn how to enhance your ads using features like ad extensions.
-                    If you run into any problems with your ads, find out how to tell if
-                    they're running and how to resolve approval issues.`;
+            return <Button onClick={this.handleReset} >
+                    Reset
+                  </Button>;
           default:
             return 'Unknown step';
         }
@@ -88,20 +88,30 @@ class ProductStepper extends React.Component {
                   <div>{this.getStepContent(index)}</div>
                   <div>
                     <div>
-                    {activeStep !== 0 &&
+                    {activeStep === 2 &&
+                      <div>
                       <Button
                         onClick={this.handleBack}
                       >
                         Back
                       </Button>
+                      <Button
+                        onClick={this.props.saveCurrent}
+                      >
+                        Watch Product
+                      </Button>
+                      </div>
                     }
+                    
+                    {activeStep === 1 &&
                       <Button
                         variant="contained"
                         color="primary"
                         onClick={this.handleNext}
                       >
-                        {activeStep === steps.length - 1 ? 'Finish' : 'OLD Next'}
+                        Next
                       </Button>
+                    }
                     </div>
                   </div>
                 </StepContent>

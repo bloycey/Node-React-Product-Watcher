@@ -58,7 +58,8 @@ createProduct = (event) => {
                 <TextField required id="filled-name" label="Product Name" margin="normal" variant="filled" onChange={this.handleChange('productName')}/>
                 <TextField required error={!this.state.validUrl} helperText={this.state.validUrl == false ? "Please enter a valid URL" : ""} id="filled-url" label="Product URL" margin="normal" variant="filled" onChange={this.handleChange('productUrl')}/> 
         </div>
-            <Button variant="contained" color="primary"type='submit'>NEXT</Button>
+            <Button variant="contained" color="primary"type='submit'>Add Product</Button>
+            <Button variant="contained" color="primary" onClick={this.props.handleNext}>Next </Button>
         </form>
         )
     }
