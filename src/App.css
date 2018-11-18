@@ -1,0 +1,27 @@
+.input-wrapper {
+    width: 100%;
+}
+.input-wrapper > div {
+    width: 50%;
+    display: inline-block;
+}
+.input-wrapper > div > div {
+    width: 95%;
+}
+
+.price-paper {
+    width: 125px;
+    display: inline-block;
+    margin: 8px;
+}
+
+.app-wrapper {
+    min-height: 100vh;
+    background-color: #eeeeee;
+    padding-top: 30px;
+}
+
+.add-product-wrapper {
+    width: 80%;
+    margin-left: 10%;
+}

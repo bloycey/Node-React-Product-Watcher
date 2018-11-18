@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import styled from "styled-components";
 import ProductStepper from "./components/ProductStepper";
 import Product from "./components/Product";
 import logo from './logo.svg';
+import './App.css'
 const { ipcRenderer } = window.require('electron');
 
 class App extends Component {
@@ -11,7 +11,8 @@ class App extends Component {
     numOfItems: 0,
     history: [],
     response: '',
-    currentItem: ''
+    currentItem: '',
+    stepper: 0
   };
 
   componentDidMount() {
@@ -88,7 +89,10 @@ class App extends Component {
     products[id].type = type;
     products[id].priceIndex = index;
     products[id].editMode = false;
-    this.setState({productList: products});
+    this.setState({
+      productList: products,
+    });
+
   }
 
   toggleEditMode = (id) => {
@@ -121,19 +125,10 @@ class App extends Component {
 
 
 render() {
-
-const AppWrapper = styled.div`
-    text-align: center;
-    min-height: 100vh;
-    background-color: #eeeeee;
-`;
-
-
-
     
     return (
       
-      <AppWrapper>
+      <section className="app-wrapper">
       <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice}/>
       <br/>
       <br/>
@@ -151,7 +146,7 @@ const AppWrapper = styled.div`
             ))} 
         </ul>
         <button onClick={() => this.refreshProducts(this.state.productList)}>Refresh All</button>
-        </AppWrapper>
+        </section>
     );
   }
 }
