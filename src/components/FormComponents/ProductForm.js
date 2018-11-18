@@ -3,14 +3,21 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import '../../App.css';
 
+function is_url(str) {
+  const regexp =  /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+        if (regexp.test(str)) {
+          return true;
+        } else {
+          return false;
+        }
+}
 
 class ProductForm extends React.Component {
 
 state = {
     productName: '',
     productUrl: '',
-    productNameEmpty: true,
-    productUrlEmpty: true
+    validUrl: true
 }
 
 
@@ -18,37 +25,38 @@ handleChange = name => event => {
     let empty = name + "Empty";
     this.setState({
         [name]: event.target.value,
-        [empty]: event.target.value == '' ? true : false, 
     })
+    if(name == "productUrl") {
+        this.setState({
+            validUrl: is_url(event.target.value),
+        })
+    }
   };
 
 
 createProduct = (event) => {
     event.preventDefault();
-    if(this.state.productNameEmpty == false && this.state.productUrlEmpty == false) {
+    if(this.state.validUrl == true ) {
         const product = {
             name: this.state.productName,
             url: this.state.productUrl
         }
         this.props.addProduct(product);
     } else {
-        if(this.state.productNameEmpty) {
-            console.log("Please add a product name to proceed")
-        }
-        if(this.state.productUrlEmpty) {
-            console.log("Please add a URL to proceed")
+            console.log("Please enter a valid URL");
         }
 
     }
-};
 
     render(){
+
+    let errorState = "error";
 
         return(
         <form className="add-product-form" onSubmit={this.createProduct}>
         <div className="input-wrapper">
-                <TextField ref={this.nameRef} id="filled-name" label="Product Name" margin="normal" variant="filled" onChange={this.handleChange('productName')}/>
-                <TextField ref={this.urlRef} id="filled-url" label="Product URL" margin="normal" variant="filled" onChange={this.handleChange('productUrl')}/> 
+                <TextField required id="filled-name" label="Product Name" margin="normal" variant="filled" onChange={this.handleChange('productName')}/>
+                <TextField required error={!this.state.validUrl} helperText={this.state.validUrl == false ? "Please enter a valid URL" : ""} id="filled-url" label="Product URL" margin="normal" variant="filled" onChange={this.handleChange('productUrl')}/> 
         </div>
             <Button variant="contained" color="primary"type='submit'>NEXT</Button>
         </form>

@@ -1,9 +1,24 @@
 import React, { Component } from 'react';
 import ProductStepper from "./components/ProductStepper";
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Product from "./components/Product";
 import logo from './logo.svg';
 import './App.css'
 const { ipcRenderer } = window.require('electron');
+
+const theme = createMuiTheme({
+  typography: {
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      'Fira Sans',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+    ].join(','),
+  },
+});
 
 class App extends Component {
   state = {
@@ -128,6 +143,7 @@ render() {
     
     return (
       
+      <MuiThemeProvider theme={theme}>
       <section className="app-wrapper">
       <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice}/>
       <br/>
@@ -147,6 +163,7 @@ render() {
         </ul>
         <button onClick={() => this.refreshProducts(this.state.productList)}>Refresh All</button>
         </section>
+        </MuiThemeProvider>
     );
   }
 }

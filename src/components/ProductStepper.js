@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import '../App.css';
 
 function getSteps() {
-  return ["Enter product's name and URL", "Choose the price to watch", "Configure options"];
+  return ["Enter product name and URL", "Choose the price to watch", "Configure options"];
 }
 
 class ProductStepper extends React.Component {
