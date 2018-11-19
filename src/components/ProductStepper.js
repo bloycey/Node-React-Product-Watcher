@@ -14,68 +14,32 @@ function getSteps() {
   return [<span className='step-title'>Enter product name and URL</span>, <span className='step-title'>Choose the price to watch</span>, <span className='step-title'>Configure options</span>];
 }
 
-class ProductStepper extends React.Component {
-
-    state = {
-        activeStep: 0,
-      };
-
-      componentDidUpdate(prevProps) {
-        console.log("updated productStepper")
-        // if(this.props.currentItem.id !== prevProps.currentItem.id) {
-        //   this.setState({
-        //     activeStep: 1
-        //   })
-        // }
-
-      }
-
-      componentDidMount() {
-        console.log("mounted productStepper")
-      }
-
-      componentWillUnmount() {
-        console.log("unmounting productStepper");
-      }
+class ProductStepper extends React.PureComponent {
 
       getStepContent = (step) => {
         switch (step) {
           case 0:
-            return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext}/>;
+            return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext}/>
           case 1:
-              return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice}/>;
+              return <div>
+                      <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice}/>
+                      <Button onClick={this.props.handleBack}>Back</Button>
+                      <Button variant="contained" color="primary" onClick={this.props.handleNext}>Next</Button>
+                      </div>
           case 2:
-            return <Button onClick={this.handleReset} >
-                    Reset
-                  </Button>;
+            return <div>
+                    <Button onClick={this.props.handleBack}>Back</Button> 
+                    <Button onClick={this.props.saveCurrent}>Watch Product</Button>
+                    </div>
           default:
             return 'Unknown step';
         }
       }
-    
-      handleNext = () => {
-        this.setState(state => ({
-          activeStep: state.activeStep + 1,
-        }));
-      };
-    
-      handleBack = () => {
-        this.setState(state => ({
-          activeStep: state.activeStep - 1,
-        }));
-      };
-    
-      handleReset = () => {
-        this.setState({
-          activeStep: 0,
-        });
-      };
-    
 
     render() {
 
         const steps = getSteps();
-        const { activeStep } = this.state;
+        const activeStep  = this.props.stepper;
         
         return (
         <section className="add-product-wrapper">
@@ -86,34 +50,6 @@ class ProductStepper extends React.Component {
                 <StepLabel>{label}</StepLabel>
                 <StepContent>
                   <div>{this.getStepContent(index)}</div>
-                  <div>
-                    <div>
-                    {activeStep === 2 &&
-                      <div>
-                      <Button
-                        onClick={this.handleBack}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        onClick={this.props.saveCurrent}
-                      >
-                        Watch Product
-                      </Button>
-                      </div>
-                    }
-                    
-                    {activeStep === 1 &&
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={this.handleNext}
-                      >
-                        Next
-                      </Button>
-                    }
-                    </div>
-                  </div>
                 </StepContent>
               </Step>
             );
@@ -122,7 +58,7 @@ class ProductStepper extends React.Component {
         {activeStep === steps.length && (
           <Paper square elevation={0}>
             <Typography>All steps completed - you&quot;re finished</Typography>
-            <Button onClick={this.handleReset} >
+            <Button onClick={this.props.handleReset} >
               Reset
             </Button>
           </Paper>

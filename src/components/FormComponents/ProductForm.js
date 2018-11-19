@@ -20,7 +20,6 @@ state = {
     validUrl: true
 }
 
-
 handleChange = name => event => {
     let empty = name + "Empty";
     this.setState({
@@ -32,7 +31,6 @@ handleChange = name => event => {
         })
     }
   };
-
 
 createProduct = (event) => {
     event.preventDefault();
@@ -59,7 +57,6 @@ createProduct = (event) => {
                 <TextField required error={!this.state.validUrl} helperText={this.state.validUrl == false ? "Please enter a valid URL" : ""} id="filled-url" label="Product URL" margin="normal" variant="filled" onChange={this.handleChange('productUrl')}/> 
         </div>
             <Button variant="contained" color="primary"type='submit'>Add Product</Button>
-            <Button variant="contained" color="primary" onClick={this.props.handleNext}>Next </Button>
         </form>
         )
     }

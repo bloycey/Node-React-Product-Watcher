@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import Paper from '@material-ui/core/Paper';
 import '../../App.css';
-const classNames = require('classnames');
-
 
 class PricePick extends React.Component {
 
     render(){
         
-
     const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, id} = this.props.currentItem;
     
     const currentSelection = type + priceIndex;

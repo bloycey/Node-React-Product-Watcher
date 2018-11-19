@@ -41,6 +41,7 @@ class App extends Component {
         console.log(data);
         this.setState({
           currentItem: data,
+          stepper: 1
         })
       } else {
         console.log("This website cannot be scraped")
@@ -113,6 +114,7 @@ class App extends Component {
     products[`product${Date.now()}`] = this.state.currentItem;
     this.setState({
       productList: products,
+      stepper: 0,
     })
   }
 
@@ -141,8 +143,25 @@ class App extends Component {
       }
       ipcRenderer.send('update-product', productToRefresh)
     })  
-  }  
+  }
+  
+  handleNext = () => {
+    this.setState({
+      stepper: this.state.stepper + 1,
+    });
+  };
 
+  handleBack = () => {
+    this.setState ({
+      stepper: this.state.stepper - 1,
+    });
+  };
+
+  handleReset = () => {
+    this.setState({
+      stepper: 0,
+    });
+  };
 
 
 render() {
@@ -151,7 +170,7 @@ render() {
       
       <MuiThemeProvider theme={theme}>
       <section className="app-wrapper">
-      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent}/>
+      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset}/>
       <br/>
       <br/>
         <ul className="products test">
