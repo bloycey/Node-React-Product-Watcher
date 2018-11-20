@@ -8,7 +8,7 @@ const { ipcRenderer } = window.require('electron');
 
 const theme = createMuiTheme({
   typography: {
-    // Use the system font instead of the default Roboto font.
+    // Use Fira Sans instead of the default Roboto font.
     fontFamily: [
       'Fira Sans',
       '-apple-system',
@@ -84,16 +84,6 @@ class App extends Component {
     }
   }
 
-  // addProduct = (product) => {
-  //   this.callApi(`addproduct/${product.name}/${product.selector}/?url=${product.url}`)
-  //   .then(res => {
-  //     this.setState({
-  //       currentItem: res,
-  //     })
-  //   }
-  //   )
-  //   .catch(err => console.log(err));
-  // }
 
   addProductBasic = (product) => {
     ipcRenderer.send('add-product', product.name, product.url);
@@ -115,6 +105,7 @@ class App extends Component {
     this.setState({
       productList: products,
       stepper: 0,
+      currentItem: '',
     })
   }
 
