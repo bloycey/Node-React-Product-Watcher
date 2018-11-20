@@ -2,13 +2,14 @@ const electron = require('electron');
 const rp = require('request-promise');
 const request = require('request');
 const cheerio = require('cheerio');
+const Store = require('electron-store');
+const store = new Store();
 
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
-
 const path = require('path');
 const url = require('url');
 const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
@@ -264,4 +265,14 @@ ipc.on('update-product', (event, productData) => {
         }
     })
     
+})
+
+ipc.on('save-state', (event, stateData) => {
+    store.set('state', stateData);
+    console.log(store.get('state'))
+})
+
+ipc.on('get-state', (event) => {
+    const state = store.get('state');
+    mainWindow.send('state-retrieved', state);
 })

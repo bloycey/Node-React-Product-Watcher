@@ -9,6 +9,7 @@
     "classnames": "^2.2.6",
     "concurrently": "^4.0.1",
     "cookie-parser": "1.4.3",
+    "electron-store": "^2.0.0",
     "express": "^4.16.2",
     "express-session": "1.15.1",
     "react": "^16.6.0",

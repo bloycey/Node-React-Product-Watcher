@@ -34,8 +34,19 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.loadFromLocal();
-    window.addEventListener("beforeunload", (this.saveStateToLocalStorage.bind(this)))
+    ipcRenderer.send('get-state');
+    ipcRenderer.on('state-retrieved', (event, state) => {
+      const {productList, numOfItems, history, response, currentItem, stepper} = state;
+      console.log('state retrieved!! ', state);
+      this.setState({
+        productList,
+        numOfItems,
+        history,
+        response,
+        currentItem,
+        stepper
+      });
+    })
     ipcRenderer.on('product-price', (event, data) => {
       if (data.status == 200) {
         console.log(data);
@@ -54,36 +65,17 @@ class App extends Component {
       allProducts[id].date = date;
       this.setState({productList: allProducts});
     })
-
   }
  
   componentWillUnmount() {
-    window.removeEventListener("beforeunload",this.saveStateToLocalStorage.bind(this));
-    // saves if component has a chance to unmount
-    this.saveStateToLocalStorage();
+    this.saveAll()
   }
 
-  loadFromLocal() {
-    for (let key in this.state) {
-      if (localStorage.hasOwnProperty(key)) {
-        let value = localStorage.getItem(key)
-        try {
-          value = JSON.parse(value);
-          this.setState({ [key]: value });
-        } catch (e) {
-          // handle empty string
-          this.setState({ [key]: value });
-        }
-      }
-    }
+  saveAll = () => {
+    console.log("save all triggered")
+    console.log(this.state);
+    ipcRenderer.send('save-state', this.state);
   }
-
-  saveStateToLocalStorage() {
-    for(let key in this.state) {
-      localStorage.setItem(key, JSON.stringify(this.state[key]));
-    }
-  }
-
 
   addProductBasic = (product) => {
     ipcRenderer.send('add-product', product.name, product.url);
@@ -106,8 +98,10 @@ class App extends Component {
       productList: products,
       stepper: 0,
       currentItem: '',
-    })
+    }, () => this.saveAll())
+    
   }
+
 
   toggleEditMode = (id) => {
     let products = {...this.state.productList};
@@ -178,6 +172,7 @@ render() {
             ))} 
         </ul>
         <button onClick={() => this.refreshProducts(this.state.productList)}>Refresh All</button>
+        <button onClick={() => this.saveAll()}>Save All</button>
         </section>
         </MuiThemeProvider>
     );
