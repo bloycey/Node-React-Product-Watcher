@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ProductForm from "./FormComponents/ProductForm";
 import PricePick from "./FormComponents/PricePick";
+import Options from "./FormComponents/Options"
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -28,8 +29,9 @@ class ProductStepper extends React.PureComponent {
                       </div>
           case 2:
             return <div>
+                    <Options/>
                     <Button onClick={this.props.handleBack}>Back</Button> 
-                    <Button onClick={this.props.saveCurrent}>Watch Product</Button>
+                    <Button varient="contained" color="primary" onClick={this.props.saveCurrent}>Watch Product</Button>
                     </div>
           default:
             return 'Unknown step';
