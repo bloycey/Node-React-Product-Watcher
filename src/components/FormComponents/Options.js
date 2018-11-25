@@ -4,6 +4,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
+import Cancel from '@material-ui/icons/Cancel'
 import '../../App.css';
 
 class Options extends React.Component {
@@ -12,6 +14,7 @@ class Options extends React.Component {
         UpNotification: false,
         DownNotification: false,
         currentTagName: '',
+        missingTag: false
       };
     
       handleChange = name => event => {
@@ -19,32 +22,45 @@ class Options extends React.Component {
       };
 
       handleChangeInput = name => event => {
-        this.setState({ [name]: event.target.value });
+        this.setState({ 
+          [name]: event.target.value,
+          missingTag: false
+         });
       };
+
 
       addTag = (event) => {
         event.preventDefault();
         let tag = this.state.currentTagName;
-        this.props.addTag(tag);
-        this.setState({
+        if (this.state.currentTagName !== '') {
+          this.props.addTag(tag);
+          this.setState({
           currentTagName: ''
-        })
+          })
+        } else {
+          this.setState({
+            missingTag: true
+          })
+          console.log("Please add a tag first")
+        } 
       }
     
 
 render(){
+
+  const tagError = "Please add a tag first!"
 
     return (
       <section className="options-wrapper">
       <div className="option-tags">
 
       <form className="add-product-form" onSubmit={this.addTag}>
-            <TextField id="tag-name" label="Enter Tag" value={this.state.currentTagName} onChange={this.handleChangeInput('currentTagName')} margin="normal" variant="filled"/>
-            <Button variant="contained" color="primary" type="submit">Add Tag</Button>
+            <TextField error={this.state.missingTag} id="tag-name" label="Enter Tag" helperText={this.state.missingTag === true ? tagError : "Press 'enter' to add"} value={this.state.currentTagName} onChange={this.handleChangeInput('currentTagName')} margin="normal" variant="filled"/>
+            {/* <Button variant="contained" color="primary" type="submit">Add Tag</Button> */}
       </form>
-      <ul className="tags-wrappers">
+      <ul className="tags-wrapper">
         {this.props.tags && this.props.tags.map((tag)=> {
-      return <li>{tag}</li>})}
+      return <li key={tag}>{tag} <i className="material-icons" onClick={() => this.props.deleteTag(tag)}>cancel</i></li>})}
       </ul>
       </div>
       <div className="option-toggles">

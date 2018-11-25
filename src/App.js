@@ -101,6 +101,15 @@ class App extends Component {
     })
   }
 
+  deleteTag = (tag) => {
+    let current = {...this.state.currentItem};
+    const newTags = current.tags.filter(item => item !== tag);
+    current.tags = newTags;
+    this.setState({
+      currentItem: current
+    })
+  }
+
   saveCurrent = () => {
     let products = {...this.state.productList};
     products[`product${Date.now()}`] = this.state.currentItem;
@@ -165,7 +174,7 @@ render() {
       
       <MuiThemeProvider theme={theme}>
       <section className="app-wrapper">
-      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag}/>
+      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag}/>
       <br/>
       <br/>
         <ul className="products test">

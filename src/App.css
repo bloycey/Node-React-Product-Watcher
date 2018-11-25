@@ -58,3 +58,23 @@
 .btn-loading {
     position: absolute;
 }
+
+.tags-wrapper {
+    padding-left: 0;
+}
+
+.tags-wrapper li {
+    background-color: #e10050;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 50px;
+    padding: 3px 3px 3px 15px;
+    list-style: none;
+    margin-right: 10px;
+}
+
+.tags-wrapper > li > i {
+    padding-left: 10px;
+    cursor: pointer;
+}

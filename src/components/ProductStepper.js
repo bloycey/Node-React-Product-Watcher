@@ -25,7 +25,7 @@ class ProductStepper extends React.PureComponent {
               return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice} handleNext={this.props.handleNext} handleBack={this.props.handleBack}/>
           case 2:
             return <div>
-                    <Options addTag={this.props.addTag} tags={this.props.currentItem.tags}/>
+                    <Options addTag={this.props.addTag} deleteTag={this.props.deleteTag} tags={this.props.currentItem.tags}/>
                     <Button onClick={this.props.handleBack}>Back</Button> 
                     <Button variant="contained" color="primary" onClick={this.props.saveCurrent}>Watch Product</Button>
                     </div>
