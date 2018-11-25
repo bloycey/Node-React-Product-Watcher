@@ -22,16 +22,12 @@ class ProductStepper extends React.PureComponent {
           case 0:
             return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext}/>
           case 1:
-              return <div>
-                      <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice}/>
-                      <Button onClick={this.props.handleBack}>Back</Button>
-                      <Button variant="contained" color="primary" onClick={this.props.handleNext}>Next</Button>
-                      </div>
+              return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice} handleNext={this.props.handleNext} handleBack={this.props.handleBack}/>
           case 2:
             return <div>
-                    <Options/>
+                    <Options addTag={this.props.addTag} tags={this.props.currentItem.tags}/>
                     <Button onClick={this.props.handleBack}>Back</Button> 
-                    <Button varient="contained" color="primary" onClick={this.props.saveCurrent}>Watch Product</Button>
+                    <Button variant="contained" color="primary" onClick={this.props.saveCurrent}>Watch Product</Button>
                     </div>
           default:
             return 'Unknown step';

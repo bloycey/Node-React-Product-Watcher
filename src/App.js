@@ -30,7 +30,7 @@ class App extends Component {
     history: [],
     response: '',
     currentItem: '',
-    stepper: 0
+    stepper: 0,
   };
 
   componentDidMount() {
@@ -86,9 +86,19 @@ class App extends Component {
     current.price = setPrice;
     current.type = type;
     current.priceIndex = index;
+    current.priceSet = true;
     this.setState({
       currentItem: current,
     });
+  }
+
+  addTag = (tag) => {
+    let current = {...this.state.currentItem};
+    current.tags = current.tags || [];
+    current.tags.push(tag);
+    this.setState({
+      currentItem: current
+    })
   }
 
   saveCurrent = () => {
@@ -155,7 +165,7 @@ render() {
       
       <MuiThemeProvider theme={theme}>
       <section className="app-wrapper">
-      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset}/>
+      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag}/>
       <br/>
       <br/>
         <ul className="products test">
