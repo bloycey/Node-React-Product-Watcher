@@ -26,7 +26,7 @@ class ProductStepper extends React.PureComponent {
           case 2:
             return <div>
                     <Options addTag={this.props.addTag} deleteTag={this.props.deleteTag} tags={this.props.currentItem.tags}/>
-                    <Button onClick={this.props.handleBack}>Back</Button> 
+                    {/* <Button onClick={this.props.handleBack}>Back</Button>  */}
                     <Button variant="contained" color="primary" onClick={this.props.saveCurrent}>Watch Product</Button>
                     </div>
           default:

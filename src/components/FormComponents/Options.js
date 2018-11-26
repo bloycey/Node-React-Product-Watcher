@@ -41,7 +41,6 @@ class Options extends React.Component {
           this.setState({
             missingTag: true
           })
-          console.log("Please add a tag first")
         } 
       }
     
@@ -54,9 +53,8 @@ render(){
       <section className="options-wrapper">
       <div className="option-tags">
 
-      <form className="add-product-form" onSubmit={this.addTag}>
+      <form className="add-tags-form" onSubmit={this.addTag}>
             <TextField error={this.state.missingTag} id="tag-name" label="Enter Tag" helperText={this.state.missingTag === true ? tagError : "Press 'enter' to add"} value={this.state.currentTagName} onChange={this.handleChangeInput('currentTagName')} margin="normal" variant="filled"/>
-            {/* <Button variant="contained" color="primary" type="submit">Add Tag</Button> */}
       </form>
       <ul className="tags-wrapper">
         {this.props.tags && this.props.tags.map((tag)=> {
@@ -71,6 +69,7 @@ render(){
               checked={this.state.UpNotification}
               onChange={this.handleChange('UpNotification')}
               value="UpNotification"
+              className="up-switch"
             />
           }
           label="Send me an email if the price of this product goes UP"
@@ -83,6 +82,7 @@ render(){
               onChange={this.handleChange('DownNotification')}
               value="DownNotifcation"
               color="primary"
+              className="down-switch"
             />
           }
           label="Send me an email if the price of this product goes DOWN"

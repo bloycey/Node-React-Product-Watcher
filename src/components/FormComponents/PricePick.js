@@ -47,8 +47,8 @@ class PricePick extends React.Component {
         {metapricePrices}
         {itempropPrices}
         {genericMetaPrices}
-        <div>
-        <Button onClick={this.props.handleBack}>Back</Button>
+        <div className="price-btn-wrapper">
+        {/* <Button onClick={this.props.handleBack}>Back</Button> */}
         {priceSet === true &&
             <Button variant="contained" color="primary" onClick={this.props.handleNext}>Next</Button>
         }
