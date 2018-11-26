@@ -4,8 +4,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import Cancel from '@material-ui/icons/Cancel'
+import Tag from './micro/Tag';
 import '../../App.css';
 
 class Options extends React.Component {
@@ -58,7 +57,8 @@ render(){
       </form>
       <ul className="tags-wrapper">
         {this.props.tags && this.props.tags.map((tag)=> {
-      return <li key={tag}>{tag} <i className="material-icons" onClick={() => this.props.deleteTag(tag)}>cancel</i></li>})}
+      return <Tag tagName={tag} iconClick={this.props.deleteTag}/>
+      })}
       </ul>
       </div>
       <div className="option-toggles">
