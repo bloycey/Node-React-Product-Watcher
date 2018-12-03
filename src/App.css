@@ -21,7 +21,6 @@
     margin: 8px 8px 8px 0;
     padding: 15px;
     border: 1px solid #f6f6f6;
-    /* transition: all 0.3s ease; */
     cursor: pointer;
 }
 
@@ -88,6 +87,42 @@
 .float-right {
     float: right;
     vertical-align: middle;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.expand-toggle-icon {
+    margin-top: -3px;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.table-text span, .table-text, .table-text ul li {
+    font-size: 14px !important;
+    vertical-align: baseline !important;
+}
+
+.table-text ul {
+    padding-left: 0;
+}
+
+.table-text ul li {
+    display: inline-block;
+}
+
+.table-text ul li::after {
+    content: ',';
+    margin-right: 0.2em;
+    display: inline-block;
+}
+
+.table-text ul li:last-child:after {
+    content: '.';
+    display: inline-block;
 }
 
 form.add-tags-form div input, .add-tags-form div {

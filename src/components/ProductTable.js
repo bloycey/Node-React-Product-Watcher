@@ -34,19 +34,20 @@ class ProductTable extends React.Component {
     return (
             <TableBody>
                 <TableRow>
-                    <TableCell><span className="name-cell">{productName}</span><span className="float-right" onClick={this.toggleExpanded}><i className="material-icons">{expandIcon}</i></span></TableCell>
-                    <TableCell>
+                    <TableCell className="table-text"><span className="name-cell">{productName}</span><span className="float-right pointer expand-toggle-icon" onClick={this.toggleExpanded}><i className="material-icons">{expandIcon}</i></span></TableCell>
+                    <TableCell className="table-text">
                     <ul className="tags-table-wrapper">
                         {tags && tags.map((tag)=> {
                             return <li key={tag}>{tag}</li>
                         })}
                     </ul>
                     </TableCell>
-                    <TableCell>{price}</TableCell>
-                    <TableCell>{date}</TableCell>
-                    <TableCell>
-                        <button onClick={() => this.props.refreshProducts(singleProductList)}>Refresh</button>
-                        <button onClick={() => this.props.deleteProduct(id)}>Delete Product</button></TableCell>
+                    <TableCell className="table-text">{price}</TableCell>
+                    <TableCell className="table-text">{date}</TableCell>
+                    <TableCell className="text-right">
+                        <span className="pointer" onClick={() => this.props.refreshProducts(singleProductList)}><i className="material-icons">refresh</i></span>
+                        <span className="pointer" onClick={() => this.props.deleteProduct(id)}><i className="material-icons">delete_outline</i></span>
+                    </TableCell>
                 </TableRow>
                 {this.state.expanded === true &&
                     <TableRow>

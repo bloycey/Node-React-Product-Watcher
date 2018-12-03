@@ -192,7 +192,7 @@ render() {
                 <TableCell>Tags</TableCell>
                 <TableCell>Product Price</TableCell>
                 <TableCell>Last Updated</TableCell>
-                <TableCell>Refresh / Delete</TableCell>
+                <TableCell className="text-right">Refresh / Delete</TableCell>
             </TableRow>
             </TableHead>
             {this.state.productList && Object.keys(this.state.productList).map(key => (
@@ -207,20 +207,7 @@ render() {
             ))}
         </Table>
       </Paper>
-        <ul className="products test">
-             {Object.keys(this.state.productList).map(key => (
-              <Product
-                key={key}
-                id={key}
-                details={this.state.productList[key]}
-                setPrice={this.setPrice}
-                refreshProducts={this.refreshProducts}
-                deleteProduct = {this.deleteProduct}
-                toggleEditMode = {this.toggleEditMode}
-              /> 
-            ))} 
-        </ul>
-        <button onClick={() => this.refreshProducts(this.state.productList)}>Refresh All</button>
+        <span onClick={() => this.refreshProducts(this.state.productList)}><i className="material-icons">refresh</i></span>
         <button onClick={() => this.saveAll()}>Save All</button>
         </section>
         </MuiThemeProvider>
