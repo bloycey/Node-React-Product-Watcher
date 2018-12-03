@@ -92,6 +92,9 @@ const sanitizeArray = (array) => {
     let removeEmpty = dollarSignRemoved.filter((value) => {
         return value != "";
     })
+
+    //TODO: Remove letters
+
     return removeEmpty; 
 }
 
@@ -241,13 +244,13 @@ ipc.on('update-product', (event, productData) => {
             const $ = cheerio.load(html);
             status = resp.statusCode;
             switch (data.type) {
-                case "metaprice":
-                console.log("updated metaprice");
+                case "jsonld":
+                console.log("updated jsonld");
                     let jsonld = scrapeJson(html, jsonPriceRegex, data.priceIndex);
                     mainWindow.send('price-updated', data.id, jsonld, date);
                     break;
-                case "jsonld":
-                console.log("updated jsonld");
+                case "metaprice":
+                console.log("updated metaprice");
                     let metaprice = scrapeMeta($("meta[property='product:price:amount']"), data.priceIndex);
                     mainWindow.send('price-updated', data.id, metaprice, date);
                     break;

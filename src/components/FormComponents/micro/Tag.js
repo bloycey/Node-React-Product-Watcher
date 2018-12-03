@@ -3,7 +3,7 @@ import '../../../App.css';
 
 const Tag = (props) => {
     return (
-        <li key={props.tagName}>{props.tagName} <i className="material-icons" onClick={() => props.iconClick(props.tagName)}>cancel</i></li>
+        <li key={props.tagName}>{props.tagName} {props.closeBtn === "true" && <i className="material-icons" onClick={() => props.iconClick(props.tagName)}>cancel</i>}</li>
     )
 }
 

@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import ProductStepper from "./components/ProductStepper";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
 import Product from "./components/Product";
+import ProductTable from "./components/ProductTable";
 import './App.css'
 const { ipcRenderer } = window.require('electron');
 
@@ -177,6 +184,30 @@ render() {
       <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag}/>
       <br/>
       <br/>
+      <Paper>
+        <Table>
+            <TableHead>
+            <TableRow>
+                <TableCell>Product Name</TableCell>
+                <TableCell>Tags</TableCell>
+                <TableCell>Product Price</TableCell>
+                <TableCell>Last Updated</TableCell>
+                <TableCell>Refresh / Delete</TableCell>
+            </TableRow>
+            </TableHead>
+            {this.state.productList && Object.keys(this.state.productList).map(key => (
+              <ProductTable
+                key={key}
+                id={key}
+                details={this.state.productList[key]}
+                setPrice={this.setPrice}
+                refreshProducts={this.refreshProducts}
+                deleteProduct = {this.deleteProduct}
+                toggleEditMode = {this.toggleEditMode}
+              /> 
+            ))}
+        </Table>
+      </Paper>
         <ul className="products test">
              {Object.keys(this.state.productList).map(key => (
               <Product

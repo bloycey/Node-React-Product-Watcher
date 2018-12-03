@@ -57,7 +57,7 @@ render(){
       </form>
       <ul className="tags-wrapper">
         {this.props.tags && this.props.tags.map((tag)=> {
-      return <Tag tagName={tag} iconClick={this.props.deleteTag}/>
+      return <Tag key={tag} tagName={tag} iconClick={this.props.deleteTag} closeBtn="true"/>
       })}
       </ul>
       </div>
