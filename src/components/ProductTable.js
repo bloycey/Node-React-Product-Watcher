@@ -7,23 +7,34 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Tag from './FormComponents/micro/Tag';
 
-const ProductTable = (props) => {
+class ProductTable extends React.Component {
+
+    state = {
+        expanded: false
+    }
+
+    toggleExpanded = () => {
+        this.setState({
+            expanded: !this.state.expanded
+        })
+    }
+
+    render() {
     
-    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags} = props.details;
-    const id = props.id;
-    // let singleProductList = {};
-    // singleProductList[this.props.id] = this.props.details;
-    // singleProductList[this.props.id].id = id;
-    // let pricelist = [];
-    // const jsonldlength = jsonld.length;
-    // const metapricelength = metaprice.length;
-    // const itemproplength = itemprop.length;
-    // const genericmetalength = genericMeta.length;
+    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags} = this.props.details;
+    const id = this.props.id;
+
+    let singleProductList = {};
+    singleProductList[this.props.id] = this.props.details;
+    singleProductList[this.props.id].id = id;
+
+    let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
+
 
     return (
             <TableBody>
                 <TableRow>
-                    <TableCell>{productName}</TableCell>
+                    <TableCell><span className="name-cell">{productName}</span><span className="float-right" onClick={this.toggleExpanded}><i className="material-icons">{expandIcon}</i></span></TableCell>
                     <TableCell>
                     <ul className="tags-table-wrapper">
                         {tags && tags.map((tag)=> {
@@ -33,10 +44,20 @@ const ProductTable = (props) => {
                     </TableCell>
                     <TableCell>{price}</TableCell>
                     <TableCell>{date}</TableCell>
-                    <TableCell>Refresh/Delete</TableCell>
+                    <TableCell>
+                        <button onClick={() => this.props.refreshProducts(singleProductList)}>Refresh</button>
+                        <button onClick={() => this.props.deleteProduct(id)}>Delete Product</button></TableCell>
                 </TableRow>
+                {this.state.expanded === true &&
+                    <TableRow>
+                        <TableCell colSpan={5}>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum ad molestias consectetur libero, reprehenderit blanditiis deleniti dolor veritatis dolore iusto assumenda excepturi labore eaque quaerat, similique corporis repellat veniam expedita.
+                        </TableCell>
+                    </TableRow>
+                }
             </TableBody>
     )
+    }
 }
 
 export default ProductTable;

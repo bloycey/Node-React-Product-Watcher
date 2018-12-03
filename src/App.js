@@ -184,7 +184,7 @@ render() {
       <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag}/>
       <br/>
       <br/>
-      <Paper>
+      <Paper className="products-wrapper">
         <Table>
             <TableHead>
             <TableRow>
@@ -203,7 +203,6 @@ render() {
                 setPrice={this.setPrice}
                 refreshProducts={this.refreshProducts}
                 deleteProduct = {this.deleteProduct}
-                toggleEditMode = {this.toggleEditMode}
               /> 
             ))}
         </Table>

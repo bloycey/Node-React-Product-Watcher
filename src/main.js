@@ -20,7 +20,7 @@ let mainWindow;
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 800, height: 600});
+    mainWindow = new BrowserWindow({width: 1350, height: 750});
 
     mainWindow.loadURL('http://localhost:3000');
 

@@ -35,7 +35,7 @@
     padding-top: 30px;
 }
 
-.add-product-wrapper {
+.add-product-wrapper, .products-wrapper {
     width: 80%;
     margin-left: 10%;
 }
@@ -83,6 +83,11 @@
 
 .price-btn-wrapper {
     margin-top: 10px;
+}
+
+.float-right {
+    float: right;
+    vertical-align: middle;
 }
 
 form.add-tags-form div input, .add-tags-form div {
