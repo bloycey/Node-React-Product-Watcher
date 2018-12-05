@@ -5,6 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 import Tag from './FormComponents/micro/Tag';
 
 class ProductTable extends React.Component {
@@ -33,8 +34,8 @@ class ProductTable extends React.Component {
 
     return (
             <TableBody>
-                <TableRow>
-                    <TableCell className="table-text"><span className="name-cell">{productName}</span><span className="float-right pointer expand-toggle-icon" onClick={this.toggleExpanded}><i className="material-icons">{expandIcon}</i></span></TableCell>
+                <TableRow className={"expanded-"+this.state.expanded}>
+                    <TableCell className="table-text pointer" onClick={this.toggleExpanded}><span className="name-cell">{productName}</span><span className="float-right expand-toggle-icon"><i className="material-icons">{expandIcon}</i></span></TableCell>
                     <TableCell className="table-text">
                     <ul className="tags-table-wrapper">
                         {tags && tags.map((tag)=> {
@@ -52,7 +53,32 @@ class ProductTable extends React.Component {
                 {this.state.expanded === true &&
                     <TableRow>
                         <TableCell colSpan={5}>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum ad molestias consectetur libero, reprehenderit blanditiis deleniti dolor veritatis dolore iusto assumenda excepturi labore eaque quaerat, similique corporis repellat veniam expedita.
+                        <div className="additional-info">
+                            <Grid container spacing={24}>
+                                <Grid item xs={12}>
+                                    <h3 className="uppercase">Additional Information</h3>
+                                    <hr/>
+                                </Grid>
+                                <Grid item xs={5} className="meta-desc">
+                                    <h4 className="uppercase">Meta description</h4>
+                                    <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsumlorem ipsum lorem ipsum lorem ipsumv lorem ipsum lorem ipsum</p>
+                                </Grid>
+                                <Grid item xs={5} className="additional-product-details">
+                                    <p>
+                                        <strong>URL: </strong> <br/>
+                                        <strong>Date Added: </strong> <br/>
+                                        <strong>Scrape Method: </strong> <br/>
+                                        <strong>Index: </strong> <br/>
+                                        <strong>Lowest Price: </strong> <br/>
+                                        <strong>Highest Price: </strong> <br/>
+                                    </p>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    IMG / PLACEHOLDER IMG
+                                </Grid>  
+                            </Grid>
+                        </div>
+                        
                         </TableCell>
                     </TableRow>
                 }
