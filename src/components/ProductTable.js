@@ -22,7 +22,7 @@ class ProductTable extends React.Component {
 
     render() {
     
-    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags} = this.props.details;
+    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history} = this.props.details;
     const id = this.props.id;
 
     let singleProductList = {};
@@ -31,6 +31,33 @@ class ProductTable extends React.Component {
 
     let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
 
+    const highsLows = (arr) => {
+        if (arr === undefined){
+            return ["unset", "unset", "unset", "unset"];
+        } else {
+        let lowest = 999999999999;
+        let lowestDate;
+        let highest = 0;
+        let highestDate;
+        for(let i = 0; i < arr.length; i++) {
+            if(arr[i].price < lowest) {
+                lowest = arr[i].price;
+                lowestDate = arr[i].date;
+            }
+            if(arr[i].price > highest) {
+                highest = arr[i].price;
+                highestDate = arr[i].date;
+            }
+        }
+        return [lowest, lowestDate, highest, highestDate]
+        } 
+    }
+
+    const priceHistory = highsLows(history);
+    const lowest = priceHistory[0];
+    const lowestDate = priceHistory[1];
+    const highest = priceHistory[2];
+    const highestDate = priceHistory[3];
 
     return (
             <TableBody>
@@ -65,12 +92,12 @@ class ProductTable extends React.Component {
                                 </Grid>
                                 <Grid item xs={5} className="additional-product-details">
                                     <p>
-                                        <strong>URL: </strong> <br/>
-                                        <strong>Date Added: </strong> <br/>
-                                        <strong>Scrape Method: </strong> <br/>
-                                        <strong>Index: </strong> <br/>
-                                        <strong>Lowest Price: </strong> <br/>
-                                        <strong>Highest Price: </strong> <br/>
+                                        <strong>URL: </strong>{url} <br/>
+                                        <strong>Date Added: </strong>{dateAdded} <br/>
+                                        <strong>Scrape Method: </strong>{type} <br/>
+                                        <strong>Index: </strong>{priceIndex} <br/>
+                                        <strong>Lowest Price: </strong>{lowest} ({lowestDate})<br/>
+                                        <strong>Highest Price: </strong>{highest} ({highestDate})<br/>
                                     </p>
                                 </Grid>
                                 <Grid item xs={2}>

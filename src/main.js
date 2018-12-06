@@ -180,7 +180,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
     const name = productName;
     const url = productUrl;
     console.log("url " + url)
-    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'}
+    const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'};
     const date = new Date().toLocaleString('en-AU', options);
     const editMode = true;
     let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString, status;
@@ -190,8 +190,6 @@ ipc.on('add-product', (event, productName, productUrl) => {
         const $ = cheerio.load(html);
         image = $("meta[property='og:image']").attr("content");
         status = resp.statusCode;
-
-            //Method 1 - MetaData
                 
                 jsonld = [];
                 metaprice = [];
@@ -216,6 +214,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
                 const productObject = {
                     "productName": productName,
                     "url": productUrl,
+                    "dateAdded": date,
                     "date": date,
                     "jsonld": jsonld,
                     "metaprice": metaprice,
@@ -225,7 +224,8 @@ ipc.on('add-product', (event, productName, productUrl) => {
                     "type": "",
                     "priceIndex": "",
                     "editMode": true,
-                    "status": status
+                    "status": status,
+                    
                 }
                 mainWindow.send('product-price', productObject)
         }
@@ -234,7 +234,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
 })
 
 ipc.on('update-product', (event, productData) => {
-    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'};
+    const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'};
     const date = new Date().toLocaleString('en-AU', options);
     const data = productData;
     console.log(data);

@@ -34,7 +34,6 @@ class App extends Component {
   state = {
     productList: {},
     numOfItems: 0,
-    history: [],
     response: '',
     currentItem: '',
     stepper: 0,
@@ -43,12 +42,11 @@ class App extends Component {
   componentDidMount() {
     ipcRenderer.send('get-state');
     ipcRenderer.on('state-retrieved', (event, state) => {
-      const {productList, numOfItems, history, response, currentItem, stepper} = state;
+      const {productList, numOfItems, response, currentItem, stepper} = state;
       console.log('state retrieved!! ', state);
       this.setState({
         productList,
         numOfItems,
-        history,
         response,
         currentItem,
         stepper
@@ -70,8 +68,19 @@ class App extends Component {
       const allProducts = {...this.state.productList};
       allProducts[id].price = data;
       allProducts[id].date = date;
-      this.setState({productList: allProducts});
-    })
+      
+      //Create a history item and push to product history array
+      const historyItem = {
+        date: date,
+        price: data
+      };
+      let productHistory = allProducts[id].history || [];
+      productHistory.push(historyItem);
+      allProducts[id].history = productHistory;
+
+      this.setState({
+        productList: allProducts}, () => this.saveAll());
+      })
   }
  
   componentWillUnmount() {
@@ -138,7 +147,9 @@ class App extends Component {
   deleteProduct = (key) => {
     let products = {...this.state.productList};
     delete products[key];
-    this.setState({productList: products})
+    this.setState({
+      productList: products
+    }, () => this.saveAll())
   }
 
   refreshProducts = (products) => {
@@ -184,6 +195,7 @@ render() {
       <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag}/>
       <br/>
       <br/>
+      {Object.keys(this.state.productList).length &&
       <Paper className="products-wrapper">
         <Table>
             <TableHead>
@@ -207,6 +219,7 @@ render() {
             ))}
         </Table>
       </Paper>
+      }
         <span onClick={() => this.refreshProducts(this.state.productList)}><i className="material-icons">refresh</i></span>
         <button onClick={() => this.saveAll()}>Save All</button>
         </section>
