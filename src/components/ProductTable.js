@@ -23,6 +23,7 @@ class ProductTable extends React.Component {
     render() {
     
     const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history} = this.props.details;
+    console.log("history", history);
     const id = this.props.id;
 
     let singleProductList = {};
@@ -31,9 +32,34 @@ class ProductTable extends React.Component {
 
     let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
 
+    const trend = (arr) => {
+        let prevPrice;
+        if (arr === undefined){
+            return "No price History";
+        }
+        for(let i = 0; i < arr.length; i++) {
+            if(i === 0 ){
+                prevPrice = arr[i].price;
+                continue;
+            }
+            if(arr[i].price === prevPrice && i !== arr.length) {
+                continue;
+            }
+            if(arr[i].price < prevPrice) {
+                return "Price Increasing";
+            }
+            if(arr[i].price > prevPrice) {
+                return "Price Dropping";
+            }
+        }
+        return "No Price Movement"
+    }
+
+    const priceTrend = trend(history);
+
     const highsLows = (arr) => {
         if (arr === undefined){
-            return ["unset", "unset", "unset", "unset"];
+            return ["N/A", "Refresh to view", "N/A", "Refresh to view"];
         } else {
         let lowest = 999999999999;
         let lowestDate;
@@ -49,15 +75,15 @@ class ProductTable extends React.Component {
                 highestDate = arr[i].date;
             }
         }
-        return [lowest, lowestDate, highest, highestDate]
+        return {lowest, lowestDate, highest, highestDate}
         } 
     }
 
     const priceHistory = highsLows(history);
-    const lowest = priceHistory[0];
-    const lowestDate = priceHistory[1];
-    const highest = priceHistory[2];
-    const highestDate = priceHistory[3];
+    const lowest = priceHistory.lowest;
+    const lowestDate = priceHistory.lowestDate;
+    const highest = priceHistory.highest;
+    const highestDate = priceHistory.highestDate;
 
     return (
             <TableBody>
@@ -98,6 +124,7 @@ class ProductTable extends React.Component {
                                         <strong>Index: </strong>{priceIndex} <br/>
                                         <strong>Lowest Price: </strong>{lowest} ({lowestDate})<br/>
                                         <strong>Highest Price: </strong>{highest} ({highestDate})<br/>
+                                        <strong>Price Trend: </strong>{priceTrend}<br/>
                                     </p>
                                 </Grid>
                                 <Grid item xs={2}>

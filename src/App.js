@@ -8,7 +8,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
-import Product from "./components/Product";
 import ProductTable from "./components/ProductTable";
 import './App.css'
 const { ipcRenderer } = window.require('electron');
@@ -75,7 +74,7 @@ class App extends Component {
         price: data
       };
       let productHistory = allProducts[id].history || [];
-      productHistory.push(historyItem);
+      productHistory.unshift(historyItem);
       allProducts[id].history = productHistory;
 
       this.setState({
