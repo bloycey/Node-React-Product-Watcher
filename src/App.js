@@ -77,6 +77,13 @@ class App extends Component {
       productHistory.unshift(historyItem);
       allProducts[id].history = productHistory;
 
+      //Create history for chart
+
+      const chartItem = [date, data];
+      let chartData = allProducts[id].chartData || [];
+      chartData.push(chartItem);
+      allProducts[id].chartData = chartData;
+
       //Set highest and lowest
       
       const highsLows = (arr) => {
