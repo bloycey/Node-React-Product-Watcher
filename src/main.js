@@ -225,7 +225,6 @@ ipc.on('add-product', (event, productName, productUrl) => {
                     "priceIndex": "",
                     "editMode": true,
                     "status": status,
-                    
                 }
                 mainWindow.send('product-price', productObject)
         }

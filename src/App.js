@@ -77,6 +77,78 @@ class App extends Component {
       productHistory.unshift(historyItem);
       allProducts[id].history = productHistory;
 
+      //Set highest and lowest
+      
+      const highsLows = (arr) => {
+        if (arr === undefined){
+            return ["N/A", "Refresh to view", "N/A", "Refresh to view"];
+        } else {
+        let lowest = 999999999999;
+        let lowestDate;
+        let highest = 0;
+        let highestDate;
+        for(let i = 0; i < arr.length; i++) {
+            if(arr[i].price < lowest) {
+                lowest = arr[i].price;
+                lowestDate = arr[i].date;
+            }
+            if(arr[i].price > highest) {
+                highest = arr[i].price;
+                highestDate = arr[i].date;
+            }
+        }
+        return {lowest, lowestDate, highest, highestDate}
+        } 
+    }
+
+    const priceHistory = highsLows(productHistory);
+    allProducts[id].lowest = priceHistory.lowest;
+    allProducts[id].lowestDate = priceHistory.lowestDate;
+    allProducts[id].highest = priceHistory.highest;
+    allProducts[id].highestDate = priceHistory.highestDate;
+
+      //Set price trend
+
+      const trend = (arr) => {
+        let prevPrice;
+        if (arr === undefined){
+            return "No price History";
+        }
+        for(let i = 0; i < arr.length; i++) {
+            if(i === 0 ){
+                prevPrice = arr[i].price;
+                continue;
+            }
+            if(arr[i].price === prevPrice && i !== arr.length) {
+                continue;
+            }
+            if(arr[i].price < prevPrice) {
+                return {
+                  status: "up",
+                  from: arr[i].price,
+                  to: prevPrice,
+                  percentChange: "not yet known",
+                  date: arr[i].date
+                }
+            }
+            if(arr[i].price > prevPrice) {
+                return {
+                  status: "down",
+                  from: arr[i].price,
+                  to: prevPrice,
+                  percentChange: "not yet known",
+                  date: arr[i].date
+                }
+
+            }
+        }
+        return "static"
+    }
+
+    allProducts[id].trend = trend(productHistory);
+
+    //Set State
+
       this.setState({
         productList: allProducts}, () => this.saveAll());
       })
