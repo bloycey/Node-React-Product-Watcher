@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
 import ProductTable from "./components/ProductTable";
+import format from 'date-fns/format'
 import './App.css'
 const { ipcRenderer } = window.require('electron');
 
@@ -78,8 +79,8 @@ class App extends Component {
       allProducts[id].history = productHistory;
 
       //Create history for chart
-
-      const chartItem = [date, data];
+      const chartItem = [format(date, 'YYYY-MM-DD HH:mm:ss Z'), parseFloat(data)];
+      console.log("chartitem", chartItem);
       let chartData = allProducts[id].chartData || [];
       chartData.push(chartItem);
       allProducts[id].chartData = chartData;

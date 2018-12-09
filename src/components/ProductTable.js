@@ -7,6 +7,9 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Tag from './FormComponents/micro/Tag';
+import ReactChartkick, { LineChart, PieChart } from 'react-chartkick'
+import Chart from 'chart.js'
+ReactChartkick.addAdapter(Chart);
 
 class ProductTable extends React.Component {
 
@@ -22,7 +25,7 @@ class ProductTable extends React.Component {
 
     render() {
     
-    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, trend} = this.props.details;
+    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, trend, chartData} = this.props.details;
     console.log("history", history);
     const id = this.props.id;
 
@@ -39,6 +42,7 @@ class ProductTable extends React.Component {
                     <TableCell className="table-text pointer" onClick={this.toggleExpanded}><span className="name-cell">{productName}</span><span className="float-right expand-toggle-icon"><i className="material-icons">{expandIcon}</i></span></TableCell>
                     <TableCell className="table-text">
                     <ul className="tags-table-wrapper">
+                    &nbsp;
                         {tags && tags.map((tag)=> {
                             return <li key={tag}>{tag}</li>
                         })}
@@ -54,6 +58,9 @@ class ProductTable extends React.Component {
                 {this.state.expanded === true &&
                     <TableRow>
                         <TableCell colSpan={5}>
+                        {chartData !== undefined &&
+                            <LineChart data={chartData} messages={{empty: "Refresh price for chart data"}} prefix="$"/>
+                        }
                         <div className="additional-info">
                             <Grid container spacing={24}>
                                 <Grid item xs={12}>

@@ -180,7 +180,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
     const name = productName;
     const url = productUrl;
     console.log("url " + url)
-    const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'};
+    const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second:'numeric'};
     const date = new Date().toLocaleString('en-AU', options);
     const editMode = true;
     let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString, status;
@@ -233,7 +233,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
 })
 
 ipc.on('update-product', (event, productData) => {
-    const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'};
+    const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second:'numeric'};
     const date = new Date().toLocaleString('en-AU', options);
     const data = productData;
     console.log(data);
