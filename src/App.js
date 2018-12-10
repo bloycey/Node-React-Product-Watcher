@@ -79,81 +79,129 @@ class App extends Component {
       allProducts[id].history = productHistory;
 
       //Create history for chart
-      const chartItem = [format(date, 'YYYY-MM-DD HH:mm:ss Z'), parseFloat(data)];
-      console.log("chartitem", chartItem);
+      const chartItem = [format(new Date(), 'YYYY-MM-DD HH:mm:ss Z'), parseFloat(data)];
       let chartData = allProducts[id].chartData || [];
       chartData.push(chartItem);
       allProducts[id].chartData = chartData;
 
-      //Set highest and lowest
+      //Set Highest and Lowest
+
+      let historyPriceArray = [];
       
-      const highsLows = (arr) => {
-        if (arr === undefined){
-            return ["N/A", "Refresh to view", "N/A", "Refresh to view"];
-        } else {
-        let lowest = 999999999999;
-        let lowestDate;
-        let highest = 0;
-        let highestDate;
-        for(let i = 0; i < arr.length; i++) {
-            if(arr[i].price < lowest) {
-                lowest = arr[i].price;
-                lowestDate = arr[i].date;
-            }
-            if(arr[i].price > highest) {
-                highest = arr[i].price;
-                highestDate = arr[i].date;
-            }
+      productHistory.forEach((arr) => {
+        historyPriceArray.push(parseFloat(arr.price));
+      })
+
+      let historyDateArray = [];
+
+      productHistory.forEach((arr) => {
+        historyDateArray.push(arr.date);
+      })
+
+      function lowestPrice(arr){
+        let index = 0;
+        let value = arr[0];
+        for (let i = 1; i < arr.length; i++) {
+          if (arr[i] < value) {
+            value = arr[i];
+            index = i;
+          }
         }
-        return {lowest, lowestDate, highest, highestDate}
-        } 
-    }
-
-    const priceHistory = highsLows(productHistory);
-    allProducts[id].lowest = priceHistory.lowest;
-    allProducts[id].lowestDate = priceHistory.lowestDate;
-    allProducts[id].highest = priceHistory.highest;
-    allProducts[id].highestDate = priceHistory.highestDate;
-
-      //Set price trend
-
-      const trend = (arr) => {
-        let prevPrice;
-        if (arr === undefined){
-            return "No price History";
+        return {
+          lowest: value,
+          index: index
         }
-        for(let i = 0; i < arr.length; i++) {
-            if(i === 0 ){
-                prevPrice = arr[i].price;
-                continue;
-            }
-            if(arr[i].price === prevPrice && i !== arr.length) {
-                continue;
-            }
-            if(arr[i].price < prevPrice) {
-                return {
-                  status: "up",
-                  from: arr[i].price,
-                  to: prevPrice,
-                  percentChange: "not yet known",
-                  date: arr[i].date
-                }
-            }
-            if(arr[i].price > prevPrice) {
-                return {
-                  status: "down",
-                  from: arr[i].price,
-                  to: prevPrice,
-                  percentChange: "not yet known",
-                  date: arr[i].date
-                }
+      }
 
-            }
+      const lowestPriceData = lowestPrice(historyPriceArray);
+      const lowestPriceValue = lowestPriceData.lowest;
+      const lowestPriceIndex = lowestPriceData.index;
+      const lowestPriceDate = historyDateArray[lowestPriceIndex];
+      // console.log("lowest price", lowestPriceValue, lowestPriceIndex, lowestPriceDate);
+
+      function highestPrice(arr){
+        let index = 0;
+        let value = arr[0];
+        for(let i = 1; i < arr.length; i++) {
+          if(arr[i] > value) {
+            value = arr[i];
+            index = i;
+          }
         }
-        return "static"
-    }
+        return {
+          highest: value,
+          index: index
+        }
+      }
 
-    allProducts[id].trend = trend(productHistory);
+      const highestPriceData = highestPrice(historyPriceArray);
+      const highestPriceValue = highestPriceData.highest;
+      const highestPriceIndex = highestPriceData.index;
+      const highestPriceDate = historyDateArray[highestPriceIndex];
+      // console.log("highest price", highestPriceValue, highestPriceIndex, highestPriceDate);
+
+      allProducts[id].lowest = {
+        value: lowestPriceValue,
+        date: lowestPriceDate
+      }
+
+      allProducts[id].highest = {
+        value: highestPriceValue,
+        date: highestPriceDate
+      }
+
+      // Set last movement
+
+      function percentChange(previous, current){
+        const difference = previous - current;
+        return (difference / previous) * 100;
+      }
+
+      function lastMovement(arr) {
+        let index = 0;
+        let value = arr[0];
+        if(arr === undefined || arr.length == 0) {
+          return {
+            trend: "No Movement Recorded",
+            from: null,
+            to: null,
+            index: null,
+            percentChange: null,
+          };
+        }
+        for (let i = 1; i < arr.length; i++) {
+          if(arr[i] !== value) {
+            return {
+              trend: arr[i] > value ? "Down" : "Up",
+              from: arr[i],
+              to: value,
+              index: i,
+              percentChange: percentChange(value, arr[i])
+            }
+            value = arr[i];
+            index = i;
+          }
+          return {
+            trend: "No Movement Recorded",
+            from: null,
+            to: null,
+            index: null,
+            percentChange: 0,
+          };
+        }
+      }
+
+      const lastMovementData = lastMovement(historyPriceArray);
+      // console.log("historyPriceArray", historyPriceArray);
+      // console.log("lastMovementData", lastMovementData);
+
+      allProducts[id].movement = {
+        trend: lastMovementData.trend,
+        from: lastMovementData.from,
+        to: lastMovementData.to,
+        date: historyDateArray[lastMovementData.index],
+        percentChange: (Math.sign(lastMovementData.percentChange) == 1 ? "+" : "") + (lastMovementData.percentChange).toFixed(2) + "%"
+      }
 
     //Set State
 

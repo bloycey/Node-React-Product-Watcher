@@ -25,9 +25,10 @@ class ProductTable extends React.Component {
 
     render() {
     
-    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, trend, chartData} = this.props.details;
-    console.log("history", history);
+    const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement} = this.props.details;
+    // console.log("history", history);
     const id = this.props.id;
+    const from = movement.from;
 
     let singleProductList = {};
     singleProductList[this.props.id] = this.props.details;
@@ -58,7 +59,7 @@ class ProductTable extends React.Component {
                 {this.state.expanded === true &&
                     <TableRow>
                         <TableCell colSpan={5}>
-                        {chartData !== undefined &&
+                        {chartData &&
                             <LineChart data={chartData} messages={{empty: "Refresh price for chart data"}} prefix="$"/>
                         }
                         <div className="additional-info">
@@ -77,9 +78,21 @@ class ProductTable extends React.Component {
                                         <strong>Date Added: </strong>{dateAdded} <br/>
                                         <strong>Scrape Method: </strong>{type} <br/>
                                         <strong>Index: </strong>{priceIndex} <br/>
-                                        {/* <strong>Lowest Price: </strong>{lowest} ({lowestDate})<br/>
-                                        <strong>Highest Price: </strong>{highest} ({highestDate})<br/>
-                                        <strong>Price Trend: </strong>{priceTrend}<br/> */}
+                                        {lowest && 
+                                            <React.Fragment>
+                                                <strong>Lowest Price: </strong>${lowest.value} ({lowest.date})<br/>
+                                            </React.Fragment>
+                                        }
+                                        {highest &&
+                                            <React.Fragment>
+                                                <strong>Highest Price: </strong>${highest.value} ({highest.date})<br/>
+                                            </React.Fragment>
+                                        }
+                                        {movement && from &&
+                                        <React.Fragment>
+                                            <strong>Last Change: </strong>{movement.trend} from ${movement.from} to ${movement.to} ({movement.percentChange}) on {movement.date}<br/>
+                                        </React.Fragment>
+                                        }
                                     </p>
                                 </Grid>
                                 <Grid item xs={2}>
