@@ -160,15 +160,15 @@ class App extends Component {
       function lastMovement(arr) {
         let index = 0;
         let value = arr[0];
-        if(arr === undefined || arr.length == 0) {
-          return {
-            trend: "No Movement Recorded",
-            from: null,
-            to: null,
-            index: null,
-            percentChange: null,
-          };
-        }
+        // if(arr === undefined || arr.length == 0 || arr.length == 1) {
+        //   return {
+        //     trend: "No Movement Recorded",
+        //     from: null,
+        //     to: null,
+        //     index: null,
+        //     percentChange: 0,
+        //   };
+        // }
         for (let i = 1; i < arr.length; i++) {
           if(arr[i] !== value) {
             return {
@@ -181,25 +181,25 @@ class App extends Component {
             value = arr[i];
             index = i;
           }
-          return {
-            trend: "No Movement Recorded",
-            from: null,
-            to: null,
-            index: null,
-            percentChange: 0,
-          };
         }
+        return {
+          trend: "No Movement Recorded",
+          from: null,
+          to: null,
+          index: null,
+          percentChange: 0,
+        };
       }
 
       const lastMovementData = lastMovement(historyPriceArray);
-      // console.log("historyPriceArray", historyPriceArray);
-      // console.log("lastMovementData", lastMovementData);
+      console.log("historyPriceArray", historyPriceArray);
+      console.log("lastMovementData", lastMovementData);
 
       allProducts[id].movement = {
         trend: lastMovementData.trend,
         from: lastMovementData.from,
         to: lastMovementData.to,
-        date: historyDateArray[lastMovementData.index],
+        date: historyDateArray[lastMovementData.index - 1],
         percentChange: (Math.sign(lastMovementData.percentChange) == 1 ? "+" : "") + (lastMovementData.percentChange).toFixed(2) + "%"
       }
 

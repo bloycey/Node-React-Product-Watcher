@@ -28,14 +28,14 @@ class ProductTable extends React.Component {
     const {productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement} = this.props.details;
     // console.log("history", history);
     const id = this.props.id;
-    const from = movement.from;
 
     let singleProductList = {};
     singleProductList[this.props.id] = this.props.details;
     singleProductList[this.props.id].id = id;
 
-    let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
+    const movementString = movement && movement.from ? `${movement.trend} from $${movement.from} to $${movement.to} (${movement.percentChange}) on ${movement.date}` : `${movement.trend}`;
 
+    let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
 
     return (
             <TableBody>
@@ -88,9 +88,10 @@ class ProductTable extends React.Component {
                                                 <strong>Highest Price: </strong>${highest.value} ({highest.date})<br/>
                                             </React.Fragment>
                                         }
-                                        {movement && from &&
+                                        {movement &&
                                         <React.Fragment>
-                                            <strong>Last Change: </strong>{movement.trend} from ${movement.from} to ${movement.to} ({movement.percentChange}) on {movement.date}<br/>
+                                            <strong>Last Change: </strong>{movementString}<br/>
+                                            
                                         </React.Fragment>
                                         }
                                     </p>
