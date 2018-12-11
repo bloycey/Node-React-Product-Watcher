@@ -139,7 +139,9 @@ const scrapeItemprop = (selector, priceIndex = 9999) => {
     if (itemproplength > 0) {
         for (let i = 0; i < itemproplength; i++) {
             //First look for the content attribute
-            itempropArray.push(selector[i].attribs.content);
+            if(selector[i].attribs.content) {
+                itempropArray.push(selector[i].attribs.content);
+            }
             // Then look for the price directly within the itemprop tag;
             if (selector[i].children[0] !== undefined) {
                 itempropArray.push(selector[i].children[0].data);
@@ -225,6 +227,9 @@ ipc.on('add-product', (event, productName, productUrl) => {
                     "priceIndex": "",
                     "editMode": true,
                     "status": status,
+                    "movement": {
+                        trend: "No Movement Detected"
+                    }
                 }
                 mainWindow.send('product-price', productObject)
         }
@@ -236,7 +241,7 @@ ipc.on('update-product', (event, productData) => {
     const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second:'numeric'};
     const date = new Date().toLocaleString('en-AU', options);
     const data = productData;
-    console.log(data);
+    // console.log(data);
     const url = data.url;
     request(url, function(err, resp, html) {
         if (!err){    

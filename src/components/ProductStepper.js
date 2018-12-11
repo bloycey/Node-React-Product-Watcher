@@ -20,7 +20,7 @@ class ProductStepper extends React.PureComponent {
       getStepContent = (step) => {
         switch (step) {
           case 0:
-            return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext}/>
+            return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext} productIsLoading={this.props.productIsLoading} productIsNotLoading={this.props.productIsNotLoading} loading={this.props.loading} error={this.props.error} hideError={this.props.hideError} response={this.props.response}/>
           case 1:
               return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice} handleNext={this.props.handleNext} handleBack={this.props.handleBack}/>
           case 2:

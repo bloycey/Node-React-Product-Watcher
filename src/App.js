@@ -37,6 +37,8 @@ class App extends Component {
     response: '',
     currentItem: '',
     stepper: 0,
+    productLoading: false,
+    error: false
   };
 
   componentDidMount() {
@@ -50,17 +52,23 @@ class App extends Component {
         response,
         currentItem,
         stepper
-      });
+      }, () => this.refreshProducts(this.state.productList));
     })
     ipcRenderer.on('product-price', (event, data) => {
-      if (data.status == 200) {
+      console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
+      if (data.status == 200 && data.genericMeta.length !== 0 || data.itemprop.length !== 0 || data.jsonld.length !== 0 || data.metaprice.length !== 0){
         console.log(data);
         this.setState({
           currentItem: data,
-          stepper: 1
+          stepper: 1,
+          response: data.status
         })
       } else {
-        console.log("This website cannot be scraped")
+        this.setState({
+          response: data.status
+        })
+        this.productIsNotLoading();
+        this.displayError();
       }
     })
     ipcRenderer.on('price-updated', (event, id, data, date) => {
@@ -117,7 +125,6 @@ class App extends Component {
       const lowestPriceValue = lowestPriceData.lowest;
       const lowestPriceIndex = lowestPriceData.index;
       const lowestPriceDate = historyDateArray[lowestPriceIndex];
-      // console.log("lowest price", lowestPriceValue, lowestPriceIndex, lowestPriceDate);
 
       function highestPrice(arr){
         let index = 0;
@@ -138,7 +145,6 @@ class App extends Component {
       const highestPriceValue = highestPriceData.highest;
       const highestPriceIndex = highestPriceData.index;
       const highestPriceDate = historyDateArray[highestPriceIndex];
-      // console.log("highest price", highestPriceValue, highestPriceIndex, highestPriceDate);
 
       allProducts[id].lowest = {
         value: lowestPriceValue,
@@ -160,15 +166,6 @@ class App extends Component {
       function lastMovement(arr) {
         let index = 0;
         let value = arr[0];
-        // if(arr === undefined || arr.length == 0 || arr.length == 1) {
-        //   return {
-        //     trend: "No Movement Recorded",
-        //     from: null,
-        //     to: null,
-        //     index: null,
-        //     percentChange: 0,
-        //   };
-        // }
         for (let i = 1; i < arr.length; i++) {
           if(arr[i] !== value) {
             return {
@@ -260,6 +257,7 @@ class App extends Component {
       productList: products,
       stepper: 0,
       currentItem: '',
+      productLoading: false
     }, () => this.saveAll())
     
   }
@@ -274,14 +272,15 @@ class App extends Component {
   deleteProduct = (key) => {
     let products = {...this.state.productList};
     delete products[key];
+    this.saveAll();
     this.setState({
       productList: products
-    }, () => this.saveAll())
+    })
   }
 
   refreshProducts = (products) => {
     Object.keys(products).map(key => {
-      console.log("full product", products[key]);
+      console.log("full products", products[key]);
       console.log("products type", products[key].type);
       let productToRefresh = {
         "productName": products[key].productName,
@@ -290,6 +289,7 @@ class App extends Component {
         "type": products[key].type, 
         "priceIndex": products[key].priceIndex
       }
+      console.log("product to refresh", productToRefresh);
       ipcRenderer.send('update-product', productToRefresh)
     })  
   }
@@ -312,6 +312,30 @@ class App extends Component {
     });
   };
 
+  productIsLoading = () => {
+    this.setState({
+      productLoading: true
+    })
+  }
+
+  productIsNotLoading = () => {
+    this.setState({
+      productLoading: false
+    })
+  }
+
+  displayError = () => {
+    this.setState({
+      error: true
+    })
+  }
+
+  hideError = () => {
+    this.setState({
+      error: false
+    })
+  }
+
 
 render() {
     
@@ -319,7 +343,7 @@ render() {
       
       <MuiThemeProvider theme={theme}>
       <section className="app-wrapper">
-      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag}/>
+      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag} productIsLoading={this.productIsLoading} productIsNotLoading={this.productIsNotLoading} loading={this.state.productLoading} error={this.state.error} hideError={this.hideError} response={this.state.response}/>
       <br/>
       <br/>
       {Object.keys(this.state.productList).length &&
