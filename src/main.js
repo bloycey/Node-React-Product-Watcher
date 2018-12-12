@@ -134,30 +134,34 @@ const scrapeMeta = (selector, priceIndex = 9999) => {
 
 const scrapeItemprop = (selector, priceIndex = 9999) => {
     const itemproplength = selector.length;
+    console.log("itemproplength " + itemproplength)
     let itempropArray = [];
-
     if (itemproplength > 0) {
         for (let i = 0; i < itemproplength; i++) {
             //First look for the content attribute
             if(selector[i].attribs.content) {
+                // console.log("itemprop1", selector[i].attribs.content);
                 itempropArray.push(selector[i].attribs.content);
-            }
+            } 
             // Then look for the price directly within the itemprop tag;
             if (selector[i].children[0] !== undefined) {
+                // console.log("itemprop2", selector[i].children[0].data)
                 itempropArray.push(selector[i].children[0].data);
-            }
+            } 
             //Next Look for a span within the itemprop (this is a common pattern);
-            if(selector[i].children[0].next !== null) {
+            if(selector[i].children[0] !== undefined && selector[i].children[0].next !== null) {
                 if (selector[i].children[0].next.name == 'span') {
+                    // console.log("itemprop3", selector[i].children[0].next.children[0].data)
                     itempropArray.push(selector[i].children[0].next.children[0].data)
                 }
-            }
+            } 
         } 
-    }
+    } 
     if (priceIndex == 9999) {
-        return itempropArray; 
+        return sanitizeArray(itempropArray); 
     } else {
-        return itempropArray[priceIndex]
+        let sanitizedArray = sanitizeArray(itempropArray);
+        return sanitizedArray[priceIndex];
     }
 }
 
@@ -181,13 +185,16 @@ const scrapeGenericMeta = (selector, priceIndex = 9999) => {
 ipc.on('add-product', (event, productName, productUrl) => {
     const name = productName;
     const url = productUrl;
+    var customHeaderRequest = request.defaults({
+        headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'}
+    })
     console.log("url " + url)
     const options = {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second:'numeric'};
     const date = new Date().toLocaleString('en-AU', options);
     const editMode = true;
     let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString, status;
 
-    request(url, function(err, resp, html) {
+    customHeaderRequest.get(url, function(err, resp, html) {
         if (!err){    
         const $ = cheerio.load(html);
         image = $("meta[property='og:image']").attr("content");
@@ -205,8 +212,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
                 metaprice = scrapeMeta($("meta[property='product:price:amount']"));
 
                 // 1.3 Itemprop Price
-                let itempropRaw = scrapeItemprop($("[itemprop='price']"));
-                itemprop = sanitizeArray(itempropRaw);
+                itemprop = scrapeItemprop($("[itemprop='price']"));
 
                 // 1.4 Generic Meta
                 genericMeta = scrapeGenericMeta($("meta[property='price']"));
@@ -243,7 +249,10 @@ ipc.on('update-product', (event, productData) => {
     const data = productData;
     // console.log(data);
     const url = data.url;
-    request(url, function(err, resp, html) {
+    var customHeaderRequest = request.defaults({
+        headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'}
+    })
+    customHeaderRequest.get(url, function(err, resp, html) {
         if (!err){    
             const $ = cheerio.load(html);
             status = resp.statusCode;

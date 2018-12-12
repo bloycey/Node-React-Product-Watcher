@@ -56,7 +56,7 @@ class App extends Component {
     })
     ipcRenderer.on('product-price', (event, data) => {
       console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
-      if (data.status == 200 && data.genericMeta.length !== 0 || data.itemprop.length !== 0 || data.jsonld.length !== 0 || data.metaprice.length !== 0){
+      if (data.status == 200 && (data.genericMeta.length !== 0 || data.itemprop.length !== 0 || data.jsonld.length !== 0 || data.metaprice.length !== 0)){
         console.log(data);
         this.setState({
           currentItem: data,
