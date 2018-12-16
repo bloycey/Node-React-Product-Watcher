@@ -17,30 +17,29 @@ function getSteps() {
 
 class ProductStepper extends React.PureComponent {
 
-      getStepContent = (step) => {
-        switch (step) {
-          case 0:
-            return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext} productIsLoading={this.props.productIsLoading} productIsNotLoading={this.props.productIsNotLoading} loading={this.props.loading} error={this.props.error} hideError={this.props.hideError} response={this.props.response}/>
-          case 1:
-              return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice} handleNext={this.props.handleNext} handleBack={this.props.handleBack}/>
-          case 2:
-            return <div>
-                    <Options addTag={this.props.addTag} deleteTag={this.props.deleteTag} tags={this.props.currentItem.tags}/>
-                    {/* <Button onClick={this.props.handleBack}>Back</Button>  */}
-                    <Button variant="contained" color="primary" onClick={this.props.saveCurrent}>Watch Product</Button>
-                    </div>
-          default:
-            return 'Unknown step';
-        }
-      }
+  getStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return <ProductForm addProduct={this.props.addProduct} handleNext={this.handleNext} productIsLoading={this.props.productIsLoading} productIsNotLoading={this.props.productIsNotLoading} loading={this.props.loading} error={this.props.error} hideError={this.props.hideError} response={this.props.response} />
+      case 1:
+        return <PricePick currentItem={this.props.currentItem} setPrice={this.props.setPrice} handleNext={this.props.handleNext} handleBack={this.props.handleBack} />
+      case 2:
+        return <div>
+          <Options addTag={this.props.addTag} deleteTag={this.props.deleteTag} tags={this.props.currentItem.tags} addShipping={this.props.addShipping} />
+          <Button variant="contained" color="primary" onClick={this.props.saveCurrent}>Watch Product</Button>
+        </div>
+      default:
+        return 'Unknown step';
+    }
+  }
 
-    render() {
+  render() {
 
-        const steps = getSteps();
-        const activeStep  = this.props.stepper;
-        
-        return (
-        <section className="add-product-wrapper">
+    const steps = getSteps();
+    const activeStep = this.props.stepper;
+
+    return (
+      <section className="add-product-wrapper wrapper">
         <Stepper activeStep={activeStep} orientation="vertical">
           {steps.map((label, index) => {
             return (
@@ -61,9 +60,9 @@ class ProductStepper extends React.PureComponent {
             </Button>
           </Paper>
         )}
-        </section>
-        );
-    }
+      </section>
+    );
+  }
 }
 
 export default ProductStepper;

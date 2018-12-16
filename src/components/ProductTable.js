@@ -28,23 +28,20 @@ class ProductTable extends React.Component {
 
     render() {
 
-        const { productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement } = this.props.details;
+        const { productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement, shippingPrice } = this.props.details;
         const id = this.props.id;
+        const shipping = shippingPrice == 0 ? "-" : shippingPrice;
+        const total = parseFloat(shippingPrice) + parseFloat(price);
 
         let singleProductList = {};
         singleProductList[this.props.id] = this.props.details;
         singleProductList[this.props.id].id = id;
+        const updated = distanceInWordsToNow(Date.parse(date), { addSuffix: true, includeSeconds: true });
 
         const MovementIcon = () => {
             if (movement && movement.from) {
                 const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
-                // const date = new Date();
                 const distance = distanceInWordsToNow(Date.parse(movement.date), { addSuffix: true });
-                // const change = format(movement.date, 'YYYY-MM-DD HH:mm:ss Z');
-                // const now = format(Date.now(), 'YYYY-MM-DD HH:mm:ss Z');
-                // console.log("now " + date);
-                // console.log("change " + movement.date);
-                // console.log(Date.parse(movement.date));
 
                 if (movement.trend == 'up') {
                     return <div className="mvmnt-wrapper"><i className="material-icons up">trending_up</i> ({distance})</div>
@@ -73,7 +70,8 @@ class ProductTable extends React.Component {
                         </ul>
                     </TableCell>
                     <TableCell className="table-text table-price"><div>{price}</div><MovementIcon /></TableCell>
-                    <TableCell className="table-text">{date}</TableCell>
+                    <TableCell className="table-text">{shipping}</TableCell>
+                    <TableCell className="table-text">{total}</TableCell>
                     <TableCell className="text-right">
                         <span className="pointer" onClick={() => this.props.refreshProducts(singleProductList)}><i className="material-icons">refresh</i></span>
                         <span className="pointer" onClick={() => this.props.deleteProduct(id)}><i className="material-icons">delete_outline</i></span>
@@ -81,7 +79,7 @@ class ProductTable extends React.Component {
                 </TableRow>
                 {this.state.expanded === true &&
                     <TableRow>
-                        <TableCell colSpan={5}>
+                        <TableCell colSpan={6}>
                             {chartData &&
                                 <LineChart data={chartData} messages={{ empty: "Refresh price for chart data" }} prefix="$" />
                             }
@@ -99,8 +97,7 @@ class ProductTable extends React.Component {
                                         <p>
                                             <strong>URL: </strong>{url} <br />
                                             <strong>Date Added: </strong>{dateAdded} <br />
-                                            <strong>Scrape Method: </strong>{type} <br />
-                                            <strong>Index: </strong>{priceIndex} <br />
+                                            <strong>Last Updated: </strong>{updated} ({date}) <br />
                                             {lowest &&
                                                 <React.Fragment>
                                                     <strong>Lowest Price: </strong>${lowest.value} ({lowest.date})<br />

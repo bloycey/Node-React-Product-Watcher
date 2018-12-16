@@ -34,7 +34,7 @@
     padding-top: 30px;
 }
 
-.add-product-wrapper, .products-wrapper {
+.wrapper {
     width: 80%;
     margin-left: 10%;
 }
@@ -206,6 +206,11 @@ form.add-tags-form div input, .add-tags-form div {
 .mvmnt-wrapper {
     display: inline-flex;
     align-items: center;
+}
+
+footer {
+    margin-top: 20px;
+    padding-bottom: 50px;
 }
 
 @media (max-width: 1200px)  {

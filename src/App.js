@@ -8,6 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
+import pink from '@material-ui/core/colors/pink';
+import Button from '@material-ui/core/Button';
 import ProductTable from "./components/ProductTable";
 import format from 'date-fns/format';
 import './App.css';
@@ -27,6 +29,7 @@ const theme = createMuiTheme({
   },
   palette: {
     primary: blue,
+    secondary: pink
   }
 });
 
@@ -251,6 +254,14 @@ class App extends Component {
     })
   }
 
+  addShipping = (price) => {
+    let current = { ...this.state.currentItem };
+    current.shippingPrice = price;
+    this.setState({
+      currentItem: current
+    })
+  }
+
   saveCurrent = () => {
     let products = { ...this.state.productList };
     products[`product${Date.now()}`] = this.state.currentItem;
@@ -344,18 +355,19 @@ class App extends Component {
 
       <MuiThemeProvider theme={theme}>
         <section className="app-wrapper">
-          <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag} productIsLoading={this.productIsLoading} productIsNotLoading={this.productIsNotLoading} loading={this.state.productLoading} error={this.state.error} hideError={this.hideError} response={this.state.response} />
+          <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag} addShipping={this.addShipping} productIsLoading={this.productIsLoading} productIsNotLoading={this.productIsNotLoading} loading={this.state.productLoading} error={this.state.error} hideError={this.hideError} response={this.state.response} />
           <br />
           <br />
           {Object.keys(this.state.productList).length &&
-            <Paper className="products-wrapper">
+            <Paper className="products-wrapper wrapper">
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>Product Name</TableCell>
                     <TableCell>Tags</TableCell>
                     <TableCell>Product Price</TableCell>
-                    <TableCell>Last Updated</TableCell>
+                    <TableCell>Shipping Price</TableCell>
+                    <TableCell><strong>TOTAL</strong></TableCell>
                     <TableCell className="text-right">Refresh / Delete</TableCell>
                   </TableRow>
                 </TableHead>
@@ -372,8 +384,9 @@ class App extends Component {
               </Table>
             </Paper>
           }
-          <span onClick={() => this.refreshProducts(this.state.productList)}><i className="material-icons">refresh</i></span>
-          <button onClick={() => this.saveAll()}>Save All</button>
+          <footer className="wrapper">
+            <Button variant="contained" color="secondary" onClick={() => this.refreshProducts(this.state.productList)}>Update All <i className="material-icons">refresh</i></Button>
+          </footer>
         </section>
       </MuiThemeProvider>
     );
