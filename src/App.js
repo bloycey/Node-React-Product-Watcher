@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
 import pink from '@material-ui/core/colors/pink';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ProductTable from "./components/ProductTable";
 import format from 'date-fns/format';
 import './App.css';
@@ -41,7 +42,7 @@ class App extends Component {
     currentItem: '',
     stepper: 0,
     productLoading: false,
-    error: false
+    error: false,
   };
 
   componentDidMount() {
@@ -79,6 +80,7 @@ class App extends Component {
       const allProducts = { ...this.state.productList };
       allProducts[id].price = data;
       allProducts[id].date = date;
+      allProducts[id].updating = false;
 
       //Create a history item and push to product history array
       const historyItem = {
@@ -274,17 +276,18 @@ class App extends Component {
 
   }
 
-
-  toggleEditMode = (id) => {
-    let products = { ...this.state.productList };
-    products[id].editMode = !products[id].editMode;
-    this.setState({ productList: products });
-  }
-
   deleteProduct = (key) => {
     let products = { ...this.state.productList };
     delete products[key];
-    this.saveAll();
+    this.setState({
+      productList: products
+    }, () => this.saveAll())
+  }
+
+
+  updatingProduct = (key) => {
+    let products = { ...this.state.productList };
+    products[key].updating = true;
     this.setState({
       productList: products
     })
@@ -301,8 +304,9 @@ class App extends Component {
         "type": products[key].type,
         "priceIndex": products[key].priceIndex
       }
+      this.updatingProduct(key);
       console.log("product to refresh", productToRefresh);
-      ipcRenderer.send('update-product', productToRefresh)
+      ipcRenderer.send('update-product', productToRefresh);
     })
   }
 
@@ -323,6 +327,19 @@ class App extends Component {
       stepper: 0,
     });
   };
+
+
+  updatingAll = () => {
+    this.setState({
+      updatingAll: true
+    })
+  }
+
+  updatingComplete = () => {
+    this.setState({
+      updatingAll: false
+    })
+  }
 
   productIsLoading = () => {
     this.setState({
@@ -351,6 +368,8 @@ class App extends Component {
 
   render() {
 
+    const updatingAll = this.state.updatingAll;
+
     return (
 
       <MuiThemeProvider theme={theme}>
@@ -358,17 +377,17 @@ class App extends Component {
           <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag} addShipping={this.addShipping} productIsLoading={this.productIsLoading} productIsNotLoading={this.productIsNotLoading} loading={this.state.productLoading} error={this.state.error} hideError={this.hideError} response={this.state.response} />
           <br />
           <br />
-          {Object.keys(this.state.productList).length &&
+          {Object.keys(this.state.productList).length > 0 &&
             <Paper className="products-wrapper wrapper">
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Product Name</TableCell>
-                    <TableCell>Tags</TableCell>
-                    <TableCell>Product Price</TableCell>
-                    <TableCell>Shipping Price</TableCell>
-                    <TableCell><strong>TOTAL</strong></TableCell>
-                    <TableCell className="text-right">Refresh / Delete</TableCell>
+                    <TableCell colSpan={3}>Product Name</TableCell>
+                    <TableCell colSpan={3}>Tags</TableCell>
+                    <TableCell colSpan={2}>Price</TableCell>
+                    <TableCell colSpan={2}>Shipping</TableCell>
+                    <TableCell colSpan={1}><strong>TOTAL</strong></TableCell>
+                    <TableCell colSpan={1} className="text-right"></TableCell>
                   </TableRow>
                 </TableHead>
                 {this.state.productList && Object.keys(this.state.productList).map(key => (
@@ -379,6 +398,7 @@ class App extends Component {
                     setPrice={this.setPrice}
                     refreshProducts={this.refreshProducts}
                     deleteProduct={this.deleteProduct}
+                    updatingProduct={this.updatingProduct}
                   />
                 ))}
               </Table>

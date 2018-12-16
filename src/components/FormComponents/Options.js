@@ -69,7 +69,7 @@ class Options extends React.Component {
           </ul>
         </div>
         <div className="option-shipping">
-          <TextField id="filled-number" label="Number" onChange={this.handleChangeShipping('currentShipping')} type="number" variant="filled" value={this.state.currentShipping} />
+          <TextField id="filled-number" label="Shipping Price *Optional" onChange={this.handleChangeShipping('currentShipping')} type="number" variant="filled" value={this.state.currentShipping} />
         </div>
         <div className="option-toggles">
           <FormGroup row>

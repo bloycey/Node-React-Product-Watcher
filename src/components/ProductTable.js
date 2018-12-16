@@ -4,6 +4,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Tag from './FormComponents/micro/Tag';
@@ -26,12 +27,17 @@ class ProductTable extends React.Component {
         })
     }
 
+    refreshProduct = (id, product) => {
+        this.props.updatingProduct(id);
+        this.props.refreshProducts(product);
+    }
+
     render() {
 
-        const { productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement, shippingPrice } = this.props.details;
+        const { productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement, shippingPrice, updating } = this.props.details;
         const id = this.props.id;
         const shipping = shippingPrice == 0 ? "-" : shippingPrice;
-        const total = parseFloat(shippingPrice) + parseFloat(price);
+        const total = (parseFloat(shippingPrice) + parseFloat(price)).toFixed(2);
 
         let singleProductList = {};
         singleProductList[this.props.id] = this.props.details;
@@ -59,9 +65,9 @@ class ProductTable extends React.Component {
 
         return (
             <TableBody>
-                <TableRow className={"expanded-" + this.state.expanded}>
-                    <TableCell className="table-text pointer" onClick={this.toggleExpanded}><span className="name-cell">{productName}</span><span className="float-right expand-toggle-icon"><i className="material-icons">{expandIcon}</i></span></TableCell>
-                    <TableCell className="table-text">
+                <TableRow className={"expanded-" + this.state.expanded + " updating-" + updating}>
+                    <TableCell colSpan={3} className="table-text pointer " onClick={this.toggleExpanded}><span className="name-cell">{productName}</span><span className="float-right expand-toggle-icon"><i className="material-icons">{expandIcon}</i></span></TableCell>
+                    <TableCell colSpan={3} className="table-text">
                         <ul className="tags-table-wrapper">
                             &nbsp;
                         {tags && tags.map((tag) => {
@@ -69,17 +75,18 @@ class ProductTable extends React.Component {
                             })}
                         </ul>
                     </TableCell>
-                    <TableCell className="table-text table-price"><div>{price}</div><MovementIcon /></TableCell>
-                    <TableCell className="table-text">{shipping}</TableCell>
-                    <TableCell className="table-text">{total}</TableCell>
-                    <TableCell className="text-right">
-                        <span className="pointer" onClick={() => this.props.refreshProducts(singleProductList)}><i className="material-icons">refresh</i></span>
+                    <TableCell colSpan={2} className="table-text table-price"><div>{price}</div><MovementIcon /></TableCell>
+                    <TableCell colSpan={2} className="table-text">{shipping}</TableCell>
+                    <TableCell colSpan={1} className="table-text">{total}</TableCell>
+                    <TableCell colSpan={1} className="text-right">
+                        {updating && <CircularProgress size={24} className="btn-loading" />}
+                        <span className="pointer" onClick={() => this.refreshProduct(id, singleProductList)}><i className="material-icons">refresh</i></span>
                         <span className="pointer" onClick={() => this.props.deleteProduct(id)}><i className="material-icons">delete_outline</i></span>
                     </TableCell>
                 </TableRow>
                 {this.state.expanded === true &&
                     <TableRow>
-                        <TableCell colSpan={6}>
+                        <TableCell colSpan={12}>
                             {chartData &&
                                 <LineChart data={chartData} messages={{ empty: "Refresh price for chart data" }} prefix="$" />
                             }
@@ -129,5 +136,4 @@ class ProductTable extends React.Component {
         )
     }
 }
-
 export default ProductTable;

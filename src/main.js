@@ -234,6 +234,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
                 "priceIndex": "",
                 "editMode": true,
                 "status": status,
+                "updating": false,
                 "movement": {
                     trend: "No Movement Detected"
                 }
