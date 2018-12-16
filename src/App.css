@@ -181,6 +181,33 @@ form.add-tags-form div input, .add-tags-form div {
     padding-bottom: 15px;
 }
 
+.table-price > * {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.table-price i {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.table-price i.up {
+    color: #F44336;
+}
+
+.table-price i.down {
+    color: #7CB342;
+}
+
+.table-price i.flat {
+    color: #FFC107
+}
+
+.mvmnt-wrapper {
+    display: inline-flex;
+    align-items: center;
+}
+
 @media (max-width: 1200px)  {
     form.add-tags-form div input, .add-tags-form div {
         width: 75%;

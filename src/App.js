@@ -9,8 +9,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
 import ProductTable from "./components/ProductTable";
-import format from 'date-fns/format'
-import './App.css'
+import format from 'date-fns/format';
+import './App.css';
 const { ipcRenderer } = window.require('electron');
 
 const theme = createMuiTheme({
@@ -44,7 +44,7 @@ class App extends Component {
   componentDidMount() {
     ipcRenderer.send('get-state');
     ipcRenderer.on('state-retrieved', (event, state) => {
-      const {productList, numOfItems, response, currentItem, stepper} = state;
+      const { productList, numOfItems, response, currentItem, stepper } = state;
       console.log('state retrieved!! ', state);
       this.setState({
         productList,
@@ -56,7 +56,7 @@ class App extends Component {
     })
     ipcRenderer.on('product-price', (event, data) => {
       console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
-      if (data.status == 200 && (data.genericMeta.length !== 0 || data.itemprop.length !== 0 || data.jsonld.length !== 0 || data.metaprice.length !== 0)){
+      if (data.status == 200 && (data.genericMeta.length !== 0 || data.itemprop.length !== 0 || data.jsonld.length !== 0 || data.metaprice.length !== 0)) {
         console.log(data);
         this.setState({
           currentItem: data,
@@ -73,10 +73,10 @@ class App extends Component {
     })
     ipcRenderer.on('price-updated', (event, id, data, date) => {
       console.log("update request", id, data);
-      const allProducts = {...this.state.productList};
+      const allProducts = { ...this.state.productList };
       allProducts[id].price = data;
       allProducts[id].date = date;
-      
+
       //Create a history item and push to product history array
       const historyItem = {
         date: date,
@@ -95,7 +95,7 @@ class App extends Component {
       //Set Highest and Lowest
 
       let historyPriceArray = [];
-      
+
       productHistory.forEach((arr) => {
         historyPriceArray.push(parseFloat(arr.price));
       })
@@ -106,7 +106,7 @@ class App extends Component {
         historyDateArray.push(arr.date);
       })
 
-      function lowestPrice(arr){
+      function lowestPrice(arr) {
         let index = 0;
         let value = arr[0];
         for (let i = 1; i < arr.length; i++) {
@@ -126,11 +126,11 @@ class App extends Component {
       const lowestPriceIndex = lowestPriceData.index;
       const lowestPriceDate = historyDateArray[lowestPriceIndex];
 
-      function highestPrice(arr){
+      function highestPrice(arr) {
         let index = 0;
         let value = arr[0];
-        for(let i = 1; i < arr.length; i++) {
-          if(arr[i] > value) {
+        for (let i = 1; i < arr.length; i++) {
+          if (arr[i] > value) {
             value = arr[i];
             index = i;
           }
@@ -158,7 +158,7 @@ class App extends Component {
 
       // Set last movement
 
-      function percentChange(previous, current){
+      function percentChange(previous, current) {
         const difference = previous - current;
         return (difference / previous) * 100;
       }
@@ -167,7 +167,7 @@ class App extends Component {
         let index = 0;
         let value = arr[0];
         for (let i = 1; i < arr.length; i++) {
-          if(arr[i] !== value) {
+          if (arr[i] !== value) {
             return {
               trend: arr[i] > value ? "Down" : "Up",
               from: arr[i],
@@ -200,13 +200,14 @@ class App extends Component {
         percentChange: (Math.sign(lastMovementData.percentChange) == 1 ? "+" : "") + (lastMovementData.percentChange).toFixed(2) + "%"
       }
 
-    //Set State
+      //Set State
 
       this.setState({
-        productList: allProducts}, () => this.saveAll());
-      })
+        productList: allProducts
+      }, () => this.saveAll());
+    })
   }
- 
+
   componentWillUnmount() {
     this.saveAll()
   }
@@ -222,7 +223,7 @@ class App extends Component {
   }
 
   setPrice = (setPrice, id, type, index) => {
-    let current = {...this.state.currentItem};
+    let current = { ...this.state.currentItem };
     current.price = setPrice;
     current.type = type;
     current.priceIndex = index;
@@ -233,7 +234,7 @@ class App extends Component {
   }
 
   addTag = (tag) => {
-    let current = {...this.state.currentItem};
+    let current = { ...this.state.currentItem };
     current.tags = current.tags || [];
     current.tags.push(tag);
     this.setState({
@@ -242,7 +243,7 @@ class App extends Component {
   }
 
   deleteTag = (tag) => {
-    let current = {...this.state.currentItem};
+    let current = { ...this.state.currentItem };
     const newTags = current.tags.filter(item => item !== tag);
     current.tags = newTags;
     this.setState({
@@ -251,7 +252,7 @@ class App extends Component {
   }
 
   saveCurrent = () => {
-    let products = {...this.state.productList};
+    let products = { ...this.state.productList };
     products[`product${Date.now()}`] = this.state.currentItem;
     this.setState({
       productList: products,
@@ -259,18 +260,18 @@ class App extends Component {
       currentItem: '',
       productLoading: false
     }, () => this.saveAll())
-    
+
   }
 
 
   toggleEditMode = (id) => {
-    let products = {...this.state.productList};
+    let products = { ...this.state.productList };
     products[id].editMode = !products[id].editMode;
-    this.setState({productList: products});
+    this.setState({ productList: products });
   }
 
   deleteProduct = (key) => {
-    let products = {...this.state.productList};
+    let products = { ...this.state.productList };
     delete products[key];
     this.saveAll();
     this.setState({
@@ -286,14 +287,14 @@ class App extends Component {
         "productName": products[key].productName,
         "url": products[key].url,
         "id": products[key].id,
-        "type": products[key].type, 
+        "type": products[key].type,
         "priceIndex": products[key].priceIndex
       }
       console.log("product to refresh", productToRefresh);
       ipcRenderer.send('update-product', productToRefresh)
-    })  
+    })
   }
-  
+
   handleNext = () => {
     this.setState({
       stepper: this.state.stepper + 1,
@@ -301,7 +302,7 @@ class App extends Component {
   };
 
   handleBack = () => {
-    this.setState ({
+    this.setState({
       stepper: this.state.stepper - 1,
     });
   };
@@ -337,44 +338,44 @@ class App extends Component {
   }
 
 
-render() {
-    
+  render() {
+
     return (
-      
+
       <MuiThemeProvider theme={theme}>
-      <section className="app-wrapper">
-      <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag} productIsLoading={this.productIsLoading} productIsNotLoading={this.productIsNotLoading} loading={this.state.productLoading} error={this.state.error} hideError={this.hideError} response={this.state.response}/>
-      <br/>
-      <br/>
-      {Object.keys(this.state.productList).length &&
-      <Paper className="products-wrapper">
-        <Table>
-            <TableHead>
-            <TableRow>
-                <TableCell>Product Name</TableCell>
-                <TableCell>Tags</TableCell>
-                <TableCell>Product Price</TableCell>
-                <TableCell>Last Updated</TableCell>
-                <TableCell className="text-right">Refresh / Delete</TableCell>
-            </TableRow>
-            </TableHead>
-            {this.state.productList && Object.keys(this.state.productList).map(key => (
-              <ProductTable
-                key={key}
-                id={key}
-                details={this.state.productList[key]}
-                setPrice={this.setPrice}
-                refreshProducts={this.refreshProducts}
-                deleteProduct = {this.deleteProduct}
-              /> 
-            ))}
-        </Table>
-      </Paper>
-      }
-        <span onClick={() => this.refreshProducts(this.state.productList)}><i className="material-icons">refresh</i></span>
-        <button onClick={() => this.saveAll()}>Save All</button>
+        <section className="app-wrapper">
+          <ProductStepper addProduct={this.addProductBasic} currentItem={this.state.currentItem} setPrice={this.setPrice} saveCurrent={this.saveCurrent} stepper={this.state.stepper} handleNext={this.handleNext} handleBack={this.handleBack} handleReset={this.handleReset} addTag={this.addTag} deleteTag={this.deleteTag} productIsLoading={this.productIsLoading} productIsNotLoading={this.productIsNotLoading} loading={this.state.productLoading} error={this.state.error} hideError={this.hideError} response={this.state.response} />
+          <br />
+          <br />
+          {Object.keys(this.state.productList).length &&
+            <Paper className="products-wrapper">
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Product Name</TableCell>
+                    <TableCell>Tags</TableCell>
+                    <TableCell>Product Price</TableCell>
+                    <TableCell>Last Updated</TableCell>
+                    <TableCell className="text-right">Refresh / Delete</TableCell>
+                  </TableRow>
+                </TableHead>
+                {this.state.productList && Object.keys(this.state.productList).map(key => (
+                  <ProductTable
+                    key={key}
+                    id={key}
+                    details={this.state.productList[key]}
+                    setPrice={this.setPrice}
+                    refreshProducts={this.refreshProducts}
+                    deleteProduct={this.deleteProduct}
+                  />
+                ))}
+              </Table>
+            </Paper>
+          }
+          <span onClick={() => this.refreshProducts(this.state.productList)}><i className="material-icons">refresh</i></span>
+          <button onClick={() => this.saveAll()}>Save All</button>
         </section>
-        </MuiThemeProvider>
+      </MuiThemeProvider>
     );
   }
 }
