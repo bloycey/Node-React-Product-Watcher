@@ -48,7 +48,12 @@ class App extends Component {
   componentDidMount() {
     ipcRenderer.send('get-state');
     ipcRenderer.on('state-retrieved', (event, state) => {
-      const { productList, numOfItems, response, currentItem, stepper } = state;
+      if(state){
+      const productList = state.productList || {};
+      const numOfItems = state.numOfItems || 0;
+      const response = state.response || '';
+      const currentItem = state.currentItem || '';
+      const stepper = state.stepper || 0;
       console.log('state retrieved!! ', state);
       this.setState({
         productList,
@@ -57,6 +62,7 @@ class App extends Component {
         currentItem,
         stepper
       }, () => this.refreshProducts(this.state.productList));
+      }
     })
     ipcRenderer.on('product-price', (event, data) => {
       console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
