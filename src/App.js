@@ -14,6 +14,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import ProductTable from "./components/ProductTable";
 import format from 'date-fns/format';
 import './App.css';
+import { getTime, addSeconds, differenceInSeconds } from 'date-fns';
 const { ipcRenderer } = window.require('electron');
 
 const theme = createMuiTheme({
@@ -43,6 +44,8 @@ class App extends Component {
     stepper: 0,
     productLoading: false,
     error: false,
+    updateInterval: 15,
+    updatingIn: 15
   };
 
   componentDidMount() {
@@ -63,6 +66,7 @@ class App extends Component {
         stepper
       }, () => this.refreshProducts(this.state.productList));
       }
+      setInterval(() => this.decrementUpdateTimer(), 60000); // Runs once a minute.
     })
     ipcRenderer.on('product-price', (event, data) => {
       console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
@@ -221,6 +225,19 @@ class App extends Component {
 
   componentWillUnmount() {
     this.saveAll()
+  }
+
+  decrementUpdateTimer = () => {
+    let newVal = this.state.updatingIn - 1;
+    if (newVal == 0) {
+      this.setState({
+        updatingIn: this.state.updateInterval
+      }, () => {this.refreshProducts(this.state.productList);}) 
+    } else {
+    this.setState({
+      updatingIn: newVal
+    })
+    }
   }
 
   saveAll = () => {
@@ -412,6 +429,7 @@ class App extends Component {
           }
           <footer className="wrapper">
             <Button variant="contained" color="secondary" onClick={() => this.refreshProducts(this.state.productList)}>Update All <i className="material-icons">refresh</i></Button>
+            <span className="autoupdate fade">Auto updating in {this.state.updatingIn} minutes;</span>
           </footer>
         </section>
       </MuiThemeProvider>

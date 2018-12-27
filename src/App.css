@@ -34,6 +34,11 @@
     padding-top: 30px;
 }
 
+.autoupdate {
+    margin-left: 15px;
+    opacity: 0.6;
+}
+
 .wrapper {
     width: 80%;
     margin-left: 10%;
