@@ -12,6 +12,7 @@ import pink from '@material-ui/core/colors/pink';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ProductTable from "./components/ProductTable";
+import Sort from "./components/Sort"
 import format from 'date-fns/format';
 import './App.css';
 import { getTime, addSeconds, differenceInSeconds } from 'date-fns';
@@ -44,29 +45,30 @@ class App extends Component {
     stepper: 0,
     productLoading: false,
     error: false,
-    updateInterval: 15,
-    updatingIn: 15
+    updateInterval: 900,
+    updatingIn: 900,
+    sortBy: 'Date Added'
   };
 
   componentDidMount() {
     ipcRenderer.send('get-state');
     ipcRenderer.on('state-retrieved', (event, state) => {
-      if(state){
-      const productList = state.productList || {};
-      const numOfItems = state.numOfItems || 0;
-      const response = state.response || '';
-      const currentItem = state.currentItem || '';
-      const stepper = state.stepper || 0;
-      console.log('state retrieved!! ', state);
-      this.setState({
-        productList,
-        numOfItems,
-        response,
-        currentItem,
-        stepper
-      }, () => this.refreshProducts(this.state.productList));
+      if (state) {
+        const productList = state.productList || {};
+        const numOfItems = state.numOfItems || 0;
+        const response = state.response || '';
+        const currentItem = state.currentItem || '';
+        const stepper = state.stepper || 0;
+        console.log('state retrieved!! ', state);
+        this.setState({
+          productList,
+          numOfItems,
+          response,
+          currentItem,
+          stepper
+        }, () => this.refreshProducts(this.state.productList));
       }
-      setInterval(() => this.decrementUpdateTimer(), 60000); // Runs once a minute.
+      setInterval(() => this.decrementUpdateTimer(), 1000); // Runs once a second.
     })
     ipcRenderer.on('product-price', (event, data) => {
       console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
@@ -232,11 +234,11 @@ class App extends Component {
     if (newVal == 0) {
       this.setState({
         updatingIn: this.state.updateInterval
-      }, () => {this.refreshProducts(this.state.productList);}) 
+      }, () => { this.refreshProducts(this.state.productList); })
     } else {
-    this.setState({
-      updatingIn: newVal
-    })
+      this.setState({
+        updatingIn: newVal
+      })
     }
   }
 
@@ -351,6 +353,12 @@ class App extends Component {
     });
   };
 
+  setSort = (value) => {
+    this.setState({
+      sortBy: value
+    })
+  }
+
 
   updatingAll = () => {
     this.setState({
@@ -392,6 +400,8 @@ class App extends Component {
   render() {
 
     const updatingAll = this.state.updatingAll;
+    let minutes = Math.floor(this.state.updatingIn / 60);
+    let seconds = this.state.updatingIn - (minutes * 60);
 
     return (
 
@@ -401,35 +411,40 @@ class App extends Component {
           <br />
           <br />
           {Object.keys(this.state.productList).length > 0 &&
-            <Paper className="products-wrapper wrapper">
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell colSpan={3}>Product Name</TableCell>
-                    <TableCell colSpan={3}>Tags</TableCell>
-                    <TableCell colSpan={2}>Price</TableCell>
-                    <TableCell colSpan={2}>Shipping</TableCell>
-                    <TableCell colSpan={1}><strong>TOTAL</strong></TableCell>
-                    <TableCell colSpan={1} className="text-right"></TableCell>
-                  </TableRow>
-                </TableHead>
-                {this.state.productList && Object.keys(this.state.productList).map(key => (
-                  <ProductTable
-                    key={key}
-                    id={key}
-                    details={this.state.productList[key]}
-                    setPrice={this.setPrice}
-                    refreshProducts={this.refreshProducts}
-                    deleteProduct={this.deleteProduct}
-                    updatingProduct={this.updatingProduct}
-                  />
-                ))}
-              </Table>
-            </Paper>
+            <section className="wrapper">
+              <div className="sort-wrapper">
+                <Sort sortBy={this.state.sortBy} setSort={this.setSort} />
+              </div>
+              <Paper className="products-wrapper">
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell colSpan={3}>Product Name</TableCell>
+                      <TableCell colSpan={3}>Tags</TableCell>
+                      <TableCell colSpan={2}>Price</TableCell>
+                      <TableCell colSpan={2}>Shipping</TableCell>
+                      <TableCell colSpan={1}><strong>TOTAL</strong></TableCell>
+                      <TableCell colSpan={1} className="text-right"></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  {this.state.productList && Object.keys(this.state.productList).map(key => (
+                    <ProductTable
+                      key={key}
+                      id={key}
+                      details={this.state.productList[key]}
+                      setPrice={this.setPrice}
+                      refreshProducts={this.refreshProducts}
+                      deleteProduct={this.deleteProduct}
+                      updatingProduct={this.updatingProduct}
+                    />
+                  ))}
+                </Table>
+              </Paper>
+            </section>
           }
           <footer className="wrapper">
             <Button variant="contained" color="secondary" onClick={() => this.refreshProducts(this.state.productList)}>Update All <i className="material-icons">refresh</i></Button>
-            <span className="autoupdate fade">Auto updating in {this.state.updatingIn} minutes;</span>
+            <span className="autoupdate fade">Auto updating in {minutes} minutes {seconds} seconds;</span>
           </footer>
         </section>
       </MuiThemeProvider>
