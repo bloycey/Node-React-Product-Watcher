@@ -28,7 +28,6 @@ class Sort extends React.Component {
             <FormControl>
                 <InputLabel htmlFor="sort">Sort By</InputLabel>
                 <Select
-                    animated={false}
                     value={this.state.sort}
                     onChange={this.handleChange}
                     input={<Input name="Sort By" id="sort" />}

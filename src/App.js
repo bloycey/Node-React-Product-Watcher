@@ -12,7 +12,8 @@ import pink from '@material-ui/core/colors/pink';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ProductTable from "./components/ProductTable";
-import Sort from "./components/Sort"
+import Sort from "./components/Sort";
+import Filter from "./components/Filter";
 import format from 'date-fns/format';
 import './App.css';
 import { getTime, addSeconds, differenceInSeconds } from 'date-fns';
@@ -68,7 +69,7 @@ class App extends Component {
           stepper
         }, () => this.refreshProducts(this.state.productList));
       }
-      setInterval(() => this.decrementUpdateTimer(), 1000); // Runs once a second.
+      setInterval(() => this.decrementUpdateTimer(), 10000); // Runs once a second.
     })
     ipcRenderer.on('product-price', (event, data) => {
       console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
@@ -354,11 +355,26 @@ class App extends Component {
   };
 
   setSort = (value) => {
+    switch (value) {
+      case "Total Price (Cheapest First)":
+        //CODE
+        break;
+      case "Total Price (Most Expensive First)":
+        //CODE
+        break;
+      case "Price (Cheapest First)":
+        //CODE
+        break;
+      case "Price (Most Expensive First)":
+        //CODE
+        break;
+      case "Date Added":
+      //CODE
+    }
     this.setState({
       sortBy: value
     })
   }
-
 
   updatingAll = () => {
     this.setState({
@@ -412,8 +428,11 @@ class App extends Component {
           <br />
           {Object.keys(this.state.productList).length > 0 &&
             <section className="wrapper">
-              <div className="sort-wrapper">
+              <div className="sort-wrapper hidden">
                 <Sort sortBy={this.state.sortBy} setSort={this.setSort} />
+              </div>
+              <div className="filter-wrapper">
+                <Filter />
               </div>
               <Paper className="products-wrapper">
                 <Table>
