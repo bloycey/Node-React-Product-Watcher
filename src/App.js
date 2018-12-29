@@ -48,7 +48,8 @@ class App extends Component {
     error: false,
     updateInterval: 900,
     updatingIn: 900,
-    sortBy: 'Date Added'
+    sortBy: 'Date Added',
+    filterBy: []
   };
 
   componentDidMount() {
@@ -412,6 +413,19 @@ class App extends Component {
     })
   }
 
+  editFilters = (filterName) => {
+    let currentFilters = [...this.state.filterBy];
+
+    if (currentFilters.indexOf(filterName.tag) == -1) {
+      currentFilters.push(filterName.tag);
+    } else {
+      currentFilters = currentFilters.filter((filter) => { return filter !== filterName.tag })
+    }
+    this.setState({
+      filterBy: currentFilters
+    })
+  }
+
 
   render() {
 
@@ -432,7 +446,7 @@ class App extends Component {
                 <Sort sortBy={this.state.sortBy} setSort={this.setSort} />
               </div>
               <div className="filter-wrapper">
-                <Filter />
+                <Filter list={this.state.productList} editFilters={this.editFilters} filterBy={this.state.filterBy} />
               </div>
               <Paper className="products-wrapper">
                 <Table>
@@ -448,6 +462,7 @@ class App extends Component {
                   </TableHead>
                   {this.state.productList && Object.keys(this.state.productList).map(key => (
                     <ProductTable
+                      filterBy={this.state.filterBy}
                       key={key}
                       id={key}
                       details={this.state.productList[key]}

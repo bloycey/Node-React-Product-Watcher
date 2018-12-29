@@ -33,6 +33,10 @@ class ProductTable extends React.Component {
         this.props.refreshProducts(product);
     }
 
+    filterOut = (filterList, current) => {
+        return current.some(filter => filterList.includes(filter))
+    }
+
     render() {
 
         const { productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement, shippingPrice, updating } = this.props.details;
@@ -64,77 +68,83 @@ class ProductTable extends React.Component {
 
         let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
 
-        return (
-            <TableBody>
-                <TableRow className={"expanded-" + this.state.expanded + " updating-" + updating}>
-                    <TableCell colSpan={3} className="table-text pointer " onClick={this.toggleExpanded}><span className="name-cell">{productName}</span><span className="float-right expand-toggle-icon"><i className="material-icons">{expandIcon}</i></span></TableCell>
-                    <TableCell colSpan={3} className="table-text">
-                        <ul className="tags-table-wrapper">
-                            &nbsp;
+
+
+        if (this.filterOut(this.props.filterBy, tags) || this.props.filterBy.length == 0) {
+            return (
+                <TableBody>
+                    <TableRow className={"expanded-" + this.state.expanded + " updating-" + updating}>
+                        <TableCell colSpan={3} className="table-text pointer " onClick={this.toggleExpanded}><span className="name-cell">{productName}</span><span className="float-right expand-toggle-icon"><i className="material-icons">{expandIcon}</i></span></TableCell>
+                        <TableCell colSpan={3} className="table-text">
+                            <ul className="tags-table-wrapper">
+                                &nbsp;
                         {tags && tags.map((tag) => {
-                                return <li key={tag}>{tag}</li>
-                            })}
-                        </ul>
-                    </TableCell>
-                    <TableCell colSpan={2} className="table-text table-price"><div>{price}</div><MovementIcon /></TableCell>
-                    <TableCell colSpan={2} className="table-text">{shipping}</TableCell>
-                    <TableCell colSpan={1} className="table-text">{total}</TableCell>
-                    <TableCell colSpan={1} className="text-right">
-                        {updating && <CircularProgress size={24} className="btn-loading" />}
-                        <span className="pointer" onClick={() => this.refreshProduct(id, singleProductList)}><i className="material-icons">refresh</i></span>
-                        <span className="pointer" onClick={() => this.props.deleteProduct(id)}><i className="material-icons">delete_outline</i></span>
-                    </TableCell>
-                </TableRow>
-                {this.state.expanded === true &&
-                    <TableRow>
-                        <TableCell colSpan={12}>
-                            {chartData &&
-                                <LineChart data={chartData} messages={{ empty: "Refresh price for chart data" }} prefix="$" />
-                            }
-                            <div className="additional-info">
-                                <Grid container spacing={24}>
-                                    <Grid item xs={12}>
-                                        <h3 className="uppercase">Additional Information</h3>
-                                        <hr />
-                                    </Grid>
-                                    <Grid item xs={5} className="meta-desc">
-                                        <h4 className="uppercase">Meta description</h4>
-                                        <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsumlorem ipsum lorem ipsum lorem ipsumv lorem ipsum lorem ipsum</p>
-                                    </Grid>
-                                    <Grid item xs={5} className="additional-product-details">
-                                        <p>
-                                            <strong>URL: </strong>{url} <br />
-                                            <strong>Date Added: </strong>{dateAdded} <br />
-                                            <strong>Last Updated: </strong>{updated} ({date}) <br />
-                                            {lowest &&
-                                                <React.Fragment>
-                                                    <strong>Lowest Price: </strong>${lowest.value} ({lowest.date})<br />
-                                                </React.Fragment>
-                                            }
-                                            {highest &&
-                                                <React.Fragment>
-                                                    <strong>Highest Price: </strong>${highest.value} ({highest.date})<br />
-                                                </React.Fragment>
-                                            }
-                                            {movement &&
-                                                <React.Fragment>
-                                                    <strong>Last Change: </strong>{movementString}<br />
-
-                                                </React.Fragment>
-                                            }
-                                        </p>
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                        IMG / PLACEHOLDER IMG
-                                </Grid>
-                                </Grid>
-                            </div>
-
+                                    return <li key={tag}>{tag}</li>
+                                })}
+                            </ul>
+                        </TableCell>
+                        <TableCell colSpan={2} className="table-text table-price"><div>{price}</div><MovementIcon /></TableCell>
+                        <TableCell colSpan={2} className="table-text">{shipping}</TableCell>
+                        <TableCell colSpan={1} className="table-text">{total}</TableCell>
+                        <TableCell colSpan={1} className="text-right">
+                            {updating && <CircularProgress size={24} className="btn-loading" />}
+                            <span className="pointer" onClick={() => this.refreshProduct(id, singleProductList)}><i className="material-icons">refresh</i></span>
+                            <span className="pointer" onClick={() => this.props.deleteProduct(id)}><i className="material-icons">delete_outline</i></span>
                         </TableCell>
                     </TableRow>
-                }
-            </TableBody>
-        )
+                    {this.state.expanded === true &&
+                        <TableRow>
+                            <TableCell colSpan={12}>
+                                {chartData &&
+                                    <LineChart data={chartData} messages={{ empty: "Refresh price for chart data" }} prefix="$" />
+                                }
+                                <div className="additional-info">
+                                    <Grid container spacing={24}>
+                                        <Grid item xs={12}>
+                                            <h3 className="uppercase">Additional Information</h3>
+                                            <hr />
+                                        </Grid>
+                                        <Grid item xs={5} className="meta-desc">
+                                            <h4 className="uppercase">Meta description</h4>
+                                            <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsumlorem ipsum lorem ipsum lorem ipsumv lorem ipsum lorem ipsum</p>
+                                        </Grid>
+                                        <Grid item xs={5} className="additional-product-details">
+                                            <p>
+                                                <strong>URL: </strong>{url} <br />
+                                                <strong>Date Added: </strong>{dateAdded} <br />
+                                                <strong>Last Updated: </strong>{updated} ({date}) <br />
+                                                {lowest &&
+                                                    <React.Fragment>
+                                                        <strong>Lowest Price: </strong>${lowest.value} ({lowest.date})<br />
+                                                    </React.Fragment>
+                                                }
+                                                {highest &&
+                                                    <React.Fragment>
+                                                        <strong>Highest Price: </strong>${highest.value} ({highest.date})<br />
+                                                    </React.Fragment>
+                                                }
+                                                {movement &&
+                                                    <React.Fragment>
+                                                        <strong>Last Change: </strong>{movementString}<br />
+
+                                                    </React.Fragment>
+                                                }
+                                            </p>
+                                        </Grid>
+                                        <Grid item xs={2}>
+                                            IMG / PLACEHOLDER IMG
+                                </Grid>
+                                    </Grid>
+                                </div>
+
+                            </TableCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            )
+        } else {
+            return null;
+        }
     }
 }
 export default ProductTable;

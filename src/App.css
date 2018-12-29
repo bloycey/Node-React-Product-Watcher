@@ -239,6 +239,7 @@ footer {
 
 #modal-inner {
     width: 50%;
+    outline: 0;
 }
 
 @media (max-width: 1200px)  {
