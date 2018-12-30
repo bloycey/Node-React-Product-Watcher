@@ -15,6 +15,7 @@
     "electron-store": "^2.0.0",
     "express": "^4.16.2",
     "express-session": "1.15.1",
+    "fast-sort": "^1.5.4",
     "react": "^16.6.0",
     "react-chartkick": "^0.3.0",
     "react-dom": "^16.6.0",

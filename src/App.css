@@ -212,6 +212,10 @@ form.add-tags-form div input, .add-tags-form div {
     color: #FFC107
 }
 
+.products-wrapper .table-title {
+    font-size: 0.85rem;
+}
+
 .mvmnt-wrapper {
     display: inline-flex;
     align-items: center;
@@ -240,6 +244,31 @@ footer {
 #modal-inner {
     width: 50%;
     outline: 0;
+    padding: 30px;
+}
+
+#modal-inner ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#modal-inner ul .filter-item {
+    height: 30px;
+    width: 50%;
+}
+
+.filter-item .filter-text {
+    padding-left: 0;
+}
+
+.filters-heading, .filters-subtitle {
+    padding-left: 40px;
+}
+
+.filter-btn {
+    display: block;
+    margin-bottom: 10px !important;
 }
 
 @media (max-width: 1200px)  {

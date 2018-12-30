@@ -230,6 +230,7 @@ ipc.on('add-product', (event, productName, productUrl) => {
                 "genericMeta": genericMeta,
                 "price": "",
                 "shippingPrice": 0,
+                "totalPrice": 0,
                 "type": "",
                 "priceIndex": "",
                 "editMode": true,

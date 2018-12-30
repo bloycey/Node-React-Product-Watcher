@@ -33,7 +33,7 @@ class Filter extends React.Component {
 
         const list = Object.keys(this.props.list).map(key => {
             let tags = this.props.list[key].tags;
-            tags.map(tag => {
+            tags && tags.map(tag => {
                 if (tagList.includes(tag) == false) {
                     tagList.push(tag);
                 }
@@ -43,7 +43,7 @@ class Filter extends React.Component {
 
         return (
             <div>
-                <Button onClick={this.handleOpen}>Filter Results {this.props.filterBy.length == 0 ? '' : '(' + this.props.filterBy.length + ')'}</Button>
+                <Button onClick={this.handleOpen} variant="outlined" className="filter-btn">Filter by Tag {this.props.filterBy.length == 0 ? '' : '(' + this.props.filterBy.length + ')'}</Button>
                 <Modal
                     aria-labelledby="simple-modal-title"
                     aria-describedby="simple-modal-description"
@@ -52,12 +52,13 @@ class Filter extends React.Component {
                     id="filter-modal"
                 >
                     <Paper id="modal-inner">
-                        <h1>MODAL TEXT</h1>
+                        <h2 className="filters-heading">Filter By Tag</h2>
+                        <p className="filters-subtitle">By clicking the tags below you will filter the products to only display products with the tags you have selected. If you leave all of the tags unchecked, all products will display.</p>
                         <List>
                             {tagList.map(tag => {
                                 const filterList = this.props.filterBy;
                                 let checkedStatus = filterList.includes(tag);
-                                return <ListItem> <Checkbox tabIndex={-1} id={tag} checked={checkedStatus} onClick={() => this.props.editFilters({ tag })} /><ListItemText primary={tag} className="pointer" onClick={() => this.props.editFilters({ tag })} /></ListItem>
+                                return <ListItem className="filter-item" key={tag}> <Checkbox tabIndex={-1} id={tag} checked={checkedStatus} onClick={() => this.props.editFilters({ tag })} /><ListItemText primary={tag} className="pointer filter-text" onClick={() => this.props.editFilters({ tag })} /></ListItem>
                             })}
                         </List>
                     </Paper>

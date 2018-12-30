@@ -15,6 +15,7 @@ import ProductTable from "./components/ProductTable";
 import Sort from "./components/Sort";
 import Filter from "./components/Filter";
 import format from 'date-fns/format';
+import sort from 'fast-sort';
 import './App.css';
 import { getTime, addSeconds, differenceInSeconds } from 'date-fns';
 const { ipcRenderer } = window.require('electron');
@@ -244,6 +245,25 @@ class App extends Component {
     }
   }
 
+  sortProducts = (obj, sortby, direction) => {
+    let newArray = [];
+    Object.keys(obj).map((key =>
+      newArray.push(obj[key])
+    ))
+
+    const sorted = direction == "desc" ? sort(newArray).desc(product => product[sortby]) : sort(newArray).asc(product => product[sortby]);
+
+    let newObject = {};
+    for (let i = 0; i < sorted.length; i++) {
+      newObject[sorted[i].id] = sorted[i];
+    }
+
+    this.setState({
+      productList: newObject
+    })
+  }
+
+
   saveAll = () => {
     console.log("save all triggered")
     console.log(this.state);
@@ -286,6 +306,7 @@ class App extends Component {
   addShipping = (price) => {
     let current = { ...this.state.currentItem };
     current.shippingPrice = price;
+    current.totalPrice = parseFloat(price) + parseFloat(this.state.currentItem.price);
     this.setState({
       currentItem: current
     })
@@ -355,28 +376,6 @@ class App extends Component {
     });
   };
 
-  setSort = (value) => {
-    switch (value) {
-      case "Total Price (Cheapest First)":
-        //CODE
-        break;
-      case "Total Price (Most Expensive First)":
-        //CODE
-        break;
-      case "Price (Cheapest First)":
-        //CODE
-        break;
-      case "Price (Most Expensive First)":
-        //CODE
-        break;
-      case "Date Added":
-      //CODE
-    }
-    this.setState({
-      sortBy: value
-    })
-  }
-
   updatingAll = () => {
     this.setState({
       updatingAll: true
@@ -442,21 +441,21 @@ class App extends Component {
           <br />
           {Object.keys(this.state.productList).length > 0 &&
             <section className="wrapper">
-              <div className="sort-wrapper hidden">
-                <Sort sortBy={this.state.sortBy} setSort={this.setSort} />
+              <div className="sort-wrapper">
+                <Sort sortProducts={this.sortProducts} productList={this.state.productList} />
               </div>
-              <div className="filter-wrapper">
+              <div className="filter-wrapper text-right">
                 <Filter list={this.state.productList} editFilters={this.editFilters} filterBy={this.state.filterBy} />
               </div>
               <Paper className="products-wrapper">
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell colSpan={3}>Product Name</TableCell>
-                      <TableCell colSpan={3}>Tags</TableCell>
-                      <TableCell colSpan={2}>Price</TableCell>
-                      <TableCell colSpan={2}>Shipping</TableCell>
-                      <TableCell colSpan={1}><strong>TOTAL</strong></TableCell>
+                      <TableCell colSpan={3} className="table-title">Product Name</TableCell>
+                      <TableCell colSpan={3} className="table-title">Tags</TableCell>
+                      <TableCell colSpan={2} className="table-title">Price</TableCell>
+                      <TableCell colSpan={2} className="table-title">Shipping</TableCell>
+                      <TableCell colSpan={1} className="table-title"><strong>TOTAL</strong></TableCell>
                       <TableCell colSpan={1} className="text-right"></TableCell>
                     </TableRow>
                   </TableHead>

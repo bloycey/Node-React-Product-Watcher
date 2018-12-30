@@ -11,8 +11,8 @@ import Tag from './FormComponents/micro/Tag';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
 import '../App.css';
-import ReactChartkick, { LineChart, PieChart } from 'react-chartkick'
-import Chart from 'chart.js'
+import ReactChartkick, { LineChart, PieChart } from 'react-chartkick';
+import Chart from 'chart.js';
 ReactChartkick.addAdapter(Chart);
 
 
@@ -34,7 +34,9 @@ class ProductTable extends React.Component {
     }
 
     filterOut = (filterList, current) => {
-        return current.some(filter => filterList.includes(filter))
+        if (filterList && current) {
+            return current.some(filter => filterList.includes(filter))
+        }
     }
 
     render() {
@@ -67,7 +69,6 @@ class ProductTable extends React.Component {
         const movementString = movement && movement.from ? `${movement.trend} from $${movement.from} to $${movement.to} (${movement.percentChange}) on ${movement.date}` : `${movement.trend}`;
 
         let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
-
 
 
         if (this.filterOut(this.props.filterBy, tags) || this.props.filterBy.length == 0) {
