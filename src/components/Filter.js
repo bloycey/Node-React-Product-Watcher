@@ -39,7 +39,6 @@ class Filter extends React.Component {
                 }
             })
         })
-        console.log("filter list", tagList);
 
         return (
             <div>

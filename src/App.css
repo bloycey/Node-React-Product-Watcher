@@ -271,6 +271,15 @@ footer {
     margin-bottom: 10px !important;
 }
 
+.sort-wrapper, .filter-wrapper {
+    display: inline-block !important;
+    vertical-align: middle;
+}
+
+.filter-wrapper {
+    margin-right: 30px;
+}
+
 @media (max-width: 1200px)  {
     form.add-tags-form div input, .add-tags-form div {
         width: 75%;

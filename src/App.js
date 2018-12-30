@@ -49,7 +49,7 @@ class App extends Component {
     error: false,
     updateInterval: 900,
     updatingIn: 900,
-    sortBy: 'Date Added',
+    sortBy: 'totalPrice-desc',
     filterBy: []
   };
 
@@ -62,16 +62,20 @@ class App extends Component {
         const response = state.response || '';
         const currentItem = state.currentItem || '';
         const stepper = state.stepper || 0;
+        const sortBy = state.sortBy;
+        const filterBy = state.filterBy || [];
         console.log('state retrieved!! ', state);
         this.setState({
           productList,
           numOfItems,
           response,
           currentItem,
-          stepper
+          stepper,
+          sortBy,
+          filterBy
         }, () => this.refreshProducts(this.state.productList));
       }
-      setInterval(() => this.decrementUpdateTimer(), 10000); // Runs once a second.
+      setInterval(() => this.decrementUpdateTimer(), 1000); // Runs once a second.
     })
     ipcRenderer.on('product-price', (event, data) => {
       console.log("product price", data.genericMeta, data.itemprop, data.jsonld, data.metaprice, data.status)
@@ -259,8 +263,9 @@ class App extends Component {
     }
 
     this.setState({
-      productList: newObject
-    })
+      productList: newObject,
+      sortBy: sortby + '-' + direction
+    }, () => this.saveAll())
   }
 
 
@@ -306,7 +311,7 @@ class App extends Component {
   addShipping = (price) => {
     let current = { ...this.state.currentItem };
     current.shippingPrice = price;
-    current.totalPrice = parseFloat(price) + parseFloat(this.state.currentItem.price);
+    current.totalPrice = (parseFloat(price) + parseFloat(this.state.currentItem.price)).toFixed(2);
     this.setState({
       currentItem: current
     })
@@ -314,7 +319,13 @@ class App extends Component {
 
   saveCurrent = () => {
     let products = { ...this.state.productList };
-    products[`product${Date.now()}`] = this.state.currentItem;
+    const identifier = Date.now();
+    products[`product${identifier}`] = this.state.currentItem;
+
+    if (products[`product${identifier}`].totalPrice == 0) {
+      products[`product${identifier}`].totalPrice = products[`product${identifier}`].price;
+    }
+
     this.setState({
       productList: products,
       stepper: 0,
@@ -441,12 +452,15 @@ class App extends Component {
           <br />
           {Object.keys(this.state.productList).length > 0 &&
             <section className="wrapper">
-              <div className="sort-wrapper">
-                <Sort sortProducts={this.sortProducts} productList={this.state.productList} />
+              <div className="text-right">
+                <div className="filter-wrapper text-right">
+                  <Filter list={this.state.productList} editFilters={this.editFilters} filterBy={this.state.filterBy} />
+                </div>
+                <div className="sort-wrapper">
+                  <Sort sortProducts={this.sortProducts} productList={this.state.productList} currentSort={this.state.sortBy} />
+                </div>
               </div>
-              <div className="filter-wrapper text-right">
-                <Filter list={this.state.productList} editFilters={this.editFilters} filterBy={this.state.filterBy} />
-              </div>
+
               <Paper className="products-wrapper">
                 <Table>
                   <TableHead>
@@ -477,7 +491,7 @@ class App extends Component {
           }
           <footer className="wrapper">
             <Button variant="contained" color="secondary" onClick={() => this.refreshProducts(this.state.productList)}>Update All <i className="material-icons">refresh</i></Button>
-            <span className="autoupdate fade">Auto updating in {minutes} minutes {seconds} seconds;</span>
+            <span className="autoupdate fade">Auto updating in {minutes}:{seconds};</span>
           </footer>
         </section>
       </MuiThemeProvider>

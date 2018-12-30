@@ -1,30 +1,38 @@
 import React, { Component } from 'react';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
 import '../App.css';
 
 
-class Sort extends React.Component {
-    state = {
+const Sort = (props) => {
 
+
+    const initSort = (event) => {
+        const selectVal = event.target.value;
+        const splitVal = selectVal.split('-');
+        const sortValue = splitVal[0];
+        const sortDirection = splitVal[1];
+        props.sortProducts(props.productList, sortValue, sortDirection);
     }
 
 
-    render() {
-
-
-        return (
-            <div>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "totalPrice", "desc")}>Sort Total Price Desc</button>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "totalPrice", "asc")}>Sort Total Price Asc</button>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "price", "desc")}>Sort Price Desc</button>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "price", "asc")}>Sort Price Asc</button>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "shippingPrice", "desc")}>Sort Shipping Price Desc</button>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "shippingPrice", "asc")}>Sort Shipping Price Asc</button>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "productName", "asc")}>Sort by Name (A-Z)</button>
-                <button onClick={() => this.props.sortProducts(this.props.productList, "productName", "desc")}>Sort by Name (Z-A)</button>
-
-            </div>
-        )
-    }
+    return (
+        <FormControl variant="outlined">
+            <Select value={props.currentSort} onChange={initSort}>
+                <MenuItem value="totalPrice-asc">Total Price (Cheapest First)</MenuItem>
+                <MenuItem value="totalPrice-desc">Total Price (Most Expensive First)</MenuItem>
+                {/* <MenuItem value="price-asc">Price - Not incl Shipping (Cheapest First)</MenuItem>
+                <MenuItem value="price-desc">Price - Not incl Shipping (Most Expensive First)</MenuItem> 
+                <MenuItem value="shippingPrice-desc">Shipping Price (Cheapest First)</MenuItem>
+                <MenuItem value="shippingPrice-asc">Shipping Price (Most Expensive First)</MenuItem>*/}
+                <MenuItem value="productName-asc">Product Name (A-Z)</MenuItem>
+                <MenuItem value="productName-desc">Product Name (Z-A)</MenuItem>
+            </Select>
+        </FormControl>
+    )
 }
 
 export default Sort;
