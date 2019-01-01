@@ -321,7 +321,6 @@ class App extends Component {
     let products = { ...this.state.productList };
     const identifier = Date.now();
     products[`product${identifier}`] = this.state.currentItem;
-
     if (products[`product${identifier}`].totalPrice == 0) {
       products[`product${identifier}`].totalPrice = products[`product${identifier}`].price;
     }
@@ -331,7 +330,13 @@ class App extends Component {
       stepper: 0,
       currentItem: '',
       productLoading: false
-    }, () => this.saveAll())
+    }, () => {
+      const splitVal = this.state.sortBy.split('-');
+      const sortValue = splitVal[0];
+      const sortDirection = splitVal[1];
+      this.sortProducts(this.state.productList, sortValue, sortDirection);
+      this.saveAll();
+    })
 
   }
 
@@ -487,12 +492,13 @@ class App extends Component {
                   ))}
                 </Table>
               </Paper>
+              <footer>
+                <Button variant="contained" color="secondary" onClick={() => this.refreshProducts(this.state.productList)}>Update All <i className="material-icons">refresh</i></Button>
+                <span className="autoupdate fade">Auto updating in {minutes}:{("00" + seconds).slice(-2)};</span>
+              </footer>
             </section>
           }
-          <footer className="wrapper">
-            <Button variant="contained" color="secondary" onClick={() => this.refreshProducts(this.state.productList)}>Update All <i className="material-icons">refresh</i></Button>
-            <span className="autoupdate fade">Auto updating in {minutes}:{seconds};</span>
-          </footer>
+
         </section>
       </MuiThemeProvider>
     );

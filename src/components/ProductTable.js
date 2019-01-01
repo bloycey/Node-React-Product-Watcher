@@ -41,7 +41,7 @@ class ProductTable extends React.Component {
 
     render() {
 
-        const { productName, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement, shippingPrice, updating } = this.props.details;
+        const { productName, image, url, date, jsonld, metaprice, itemprop, genericMeta, editMode, status, price, type, priceIndex, tags, dateAdded, history, chartData, lowest, highest, movement, shippingPrice, updating, description } = this.props.details;
         const id = this.props.id;
         const shipping = shippingPrice == 0 ? "-" : shippingPrice;
         const total = (parseFloat(shippingPrice) + parseFloat(price)).toFixed(2);
@@ -66,9 +66,18 @@ class ProductTable extends React.Component {
             }
         }
 
+        const ImageTag = () => {
+            if (image == "No Image Found") {
+                return "No Image Found"
+            } else {
+                return <img src={image} alt={productName} className="product-img" />
+            }
+        }
+
         const movementString = movement && movement.from ? `${movement.trend} from $${movement.from} to $${movement.to} (${movement.percentChange}) on ${movement.date}` : `${movement.trend}`;
 
         let expandIcon = this.state.expanded === true ? "expand_less" : "expand_more";
+
 
 
         if (this.filterOut(this.props.filterBy, tags) || this.props.filterBy.length == 0) {
@@ -105,13 +114,13 @@ class ProductTable extends React.Component {
                                             <h3 className="uppercase">Additional Information</h3>
                                             <hr />
                                         </Grid>
-                                        <Grid item xs={5} className="meta-desc">
+                                        <Grid item xs={4} className="meta-desc">
                                             <h4 className="uppercase">Meta description</h4>
-                                            <p>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsumlorem ipsum lorem ipsum lorem ipsumv lorem ipsum lorem ipsum</p>
+                                            <p>{description}</p>
                                         </Grid>
                                         <Grid item xs={5} className="additional-product-details">
                                             <p>
-                                                <strong>URL: </strong>{url} <br />
+                                                <strong>URL: </strong><a href={url} target="_blank">{url} </a><br />
                                                 <strong>Date Added: </strong>{dateAdded} <br />
                                                 <strong>Last Updated: </strong>{updated} ({date}) <br />
                                                 {lowest &&
@@ -132,9 +141,9 @@ class ProductTable extends React.Component {
                                                 }
                                             </p>
                                         </Grid>
-                                        <Grid item xs={2}>
-                                            IMG / PLACEHOLDER IMG
-                                </Grid>
+                                        <Grid item xs={3}>
+                                            <ImageTag />
+                                        </Grid>
                                     </Grid>
                                 </div>
 

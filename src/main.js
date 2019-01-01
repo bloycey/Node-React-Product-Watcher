@@ -34,6 +34,12 @@ function createWindow() {
         // when you should delete the corresponding element.
         mainWindow = null
     })
+
+    // Opens link in native browswer rather than in electron.
+    mainWindow.webContents.on('new-window', function (e, url) {
+        e.preventDefault();
+        require('electron').shell.openExternal(url);
+    });
 }
 
 // This method will be called when Electron has finished
@@ -96,6 +102,11 @@ const sanitizeArray = (array) => {
     //TODO: Remove letters
 
     return removeEmpty;
+}
+
+const getBaseUrl = (url) => {
+    let newUrl = new URL(url);
+    return newUrl.protocol + newUrl.hostname
 }
 
 //Scraping Methods
@@ -181,23 +192,58 @@ const scrapeGenericMeta = (selector, priceIndex = 9999) => {
     }
 }
 
+const scrapeDescription = (selector) => {
+    const descriptionLength = selector.length;
+    let descriptionRaw = ["No Description Found"];
+    if (descriptionLength > 0) {
+        // Only push first item (lets hope its the right one)
+        for (let i = 0; i < 1; i++) {
+            descriptionRaw[0] = selector[i].attribs.content;
+        }
+    }
+    return descriptionRaw[0];
+}
+
+const scrapeImage = (baseurl, selector) => {
+    const imageLength = selector.length;
+    let imagePath = ["No image Found"];
+    if (imageLength > 0) {
+        // Only push first item (lets hope its the right one)
+        for (let i = 0; i < 1; i++) {
+            imagePath[0] = selector[i].attribs.content;
+        }
+    }
+    // If not image found
+    if (imagePath[0] == "No Image Found") {
+        return "No Image Found"
+    }
+    //If the url has www or http in it then the image path is probably absolute
+    if (imagePath[0].search("www") !== -1 || imagePath[0].search("http") !== -1) {
+        return imagePath[0]
+    } else {
+        // handle relative image url path
+        return baseurl + imagePath[0]
+    }
+}
+
 
 ipc.on('add-product', (event, productName, productUrl) => {
     const name = productName;
     const url = productUrl;
+    const baseUrl = getBaseUrl(url);
     var customHeaderRequest = request.defaults({
         headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36' }
     })
     console.log("url " + url)
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    const dateRaw = new Date().getTime();
     const date = new Date().toLocaleString('en-AU', options);
     const editMode = true;
-    let prices, image, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString, status;
+    let prices, jsonld, jsonldlength, metalength, itemproplength, itempropSelector, genericMeta, genericMetaLength, metaprice, itemprop, all, pricesString, status;
 
     customHeaderRequest.get(url, function (err, resp, html) {
         if (!err) {
             const $ = cheerio.load(html);
-            image = $("meta[property='og:image']").attr("content");
             status = resp.statusCode;
 
             jsonld = [];
@@ -217,30 +263,43 @@ ipc.on('add-product', (event, productName, productUrl) => {
             // 1.4 Generic Meta
             genericMeta = scrapeGenericMeta($("meta[property='price']"));
 
+            //1.5 Description
+            const description = scrapeDescription($("meta[name='description']"))
+
+            //1.6 Image
+
+            const image = scrapeImage(baseUrl, $("meta[property='og:image']"))
+
             // res.send({jsonld, metaprice, itemprop, genericMeta, status})
             // console.log(jsonld, metaprice, itemprop, genericMeta, status);
             const productObject = {
-                "productName": productName,
-                "url": productUrl,
+                productName,
+                description,
+                url,
+                image,
+                baseUrl,
                 "dateAdded": date,
-                "date": date,
-                "jsonld": jsonld,
-                "metaprice": metaprice,
-                "itemprop": itemprop,
-                "genericMeta": genericMeta,
+                "dateAddedRaw": dateRaw,
+                date,
+                jsonld,
+                metaprice,
+                itemprop,
+                genericMeta,
                 "price": "",
                 "shippingPrice": "0.00",
                 "totalPrice": "0",
                 "type": "",
                 "priceIndex": "",
                 "editMode": true,
-                "status": status,
+                status,
                 "updating": false,
                 "movement": {
                     trend: "No Movement Detected"
                 }
             }
             mainWindow.send('product-price', productObject)
+        } else {
+            console.log(err);
         }
 
     });
@@ -281,6 +340,8 @@ ipc.on('update-product', (event, productData) => {
                     mainWindow.send('price-updated', data.id, genericMeta, date);
                     break;
             }
+        } else {
+            console.log(err);
         }
     })
 

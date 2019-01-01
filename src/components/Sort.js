@@ -30,6 +30,8 @@ const Sort = (props) => {
                 <MenuItem value="shippingPrice-asc">Shipping Price (Most Expensive First)</MenuItem>*/}
                 <MenuItem value="productName-asc">Product Name (A-Z)</MenuItem>
                 <MenuItem value="productName-desc">Product Name (Z-A)</MenuItem>
+                <MenuItem value="dateAddedRaw-desc">Date Added (Newest First)</MenuItem>
+                <MenuItem value="dateAddedRaw-asc">Date Added (Oldest First)</MenuItem>
             </Select>
         </FormControl>
     )

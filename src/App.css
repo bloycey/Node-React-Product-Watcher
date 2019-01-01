@@ -172,7 +172,7 @@ form.add-tags-form div input, .add-tags-form div {
     color: #333333;
 }
 
-.meta-desc p, .additional-product-details p, .additional-product-details p strong {
+.meta-desc p, .additional-product-details p, .additional-product-details p strong, .additional-product-details a {
     font-size: 13px;
     color: #333333;
 }
@@ -278,6 +278,10 @@ footer {
 
 .filter-wrapper {
     margin-right: 30px;
+}
+
+.product-img {
+    max-width: 93%;
 }
 
 @media (max-width: 1200px)  {
