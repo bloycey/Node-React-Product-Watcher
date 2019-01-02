@@ -29,8 +29,8 @@ class Filter extends React.Component {
 
     render() {
 
+        if(this.props.list){
         let tagList = [];
-
         const list = Object.keys(this.props.list).map(key => {
             let tags = this.props.list[key].tags;
             tags && tags.map(tag => {
@@ -38,7 +38,7 @@ class Filter extends React.Component {
                     tagList.push(tag);
                 }
             })
-        })
+        }) 
 
         return (
             <div>
@@ -64,6 +64,9 @@ class Filter extends React.Component {
                 </Modal>
             </div>
         )
+        } else {
+            return null;
+        }
     }
 }
 

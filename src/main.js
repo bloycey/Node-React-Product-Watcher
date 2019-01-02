@@ -213,7 +213,7 @@ const scrapeImage = (baseurl, selector) => {
             imagePath[0] = selector[i].attribs.content;
         }
     }
-    console.log("current img: " + imagePath[0])
+
     // If not image found
     if (imagePath[0] == "No Image Found") {
         return "No Image Found"

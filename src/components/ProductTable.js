@@ -11,6 +11,7 @@ import Tag from './FormComponents/micro/Tag';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import format from 'date-fns/format';
 import '../App.css';
+import Edit from "./Edit";
 import ReactChartkick, { LineChart, PieChart } from 'react-chartkick';
 import Chart from 'chart.js';
 ReactChartkick.addAdapter(Chart);
@@ -117,6 +118,7 @@ class ProductTable extends React.Component {
                                         <Grid item xs={4} className="meta-desc">
                                             <h4 className="uppercase">Meta description</h4>
                                             <p>{description}</p>
+                                            <Edit/>
                                         </Grid>
                                         <Grid item xs={5} className="additional-product-details">
                                             <p>
