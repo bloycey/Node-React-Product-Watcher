@@ -206,13 +206,14 @@ const scrapeDescription = (selector) => {
 
 const scrapeImage = (baseurl, selector) => {
     const imageLength = selector.length;
-    let imagePath = ["No image Found"];
+    let imagePath = ["No Image Found"];
     if (imageLength > 0) {
         // Only push first item (lets hope its the right one)
         for (let i = 0; i < 1; i++) {
             imagePath[0] = selector[i].attribs.content;
         }
     }
+    console.log("current img: " + imagePath[0])
     // If not image found
     if (imagePath[0] == "No Image Found") {
         return "No Image Found"
