@@ -235,7 +235,7 @@ footer {
     margin-bottom: 15px;
 }
 
-#filter-modal {
+#filter-modal, #edit-modal {
     display: flex;
     align-items: center;
     justify-content: center;
