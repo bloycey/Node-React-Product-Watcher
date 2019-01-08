@@ -208,7 +208,10 @@ class ProductTable extends React.Component {
                       <h4 className="uppercase">Meta description</h4>
                       <p>{description}</p>
                       <Edit
+                        id={id}
                         name={productName}
+                        tags={tags}
+                        shippingPrice={shippingPrice}
                         updateProduct={this.props.updateProduct}
                       />
                     </Grid>

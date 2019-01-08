@@ -483,8 +483,17 @@ class App extends Component {
     });
   };
 
-  updateProduct = (name, tagsArray, shippingPrice) => {
-    console.log(name, tagsArray, shippingPrice);
+  updateProduct = (id, name, tagsArray, shippingPrice) => {
+    let products = { ...this.state.productList };
+    products[id].productName = name;
+    products[id].tags = tagsArray;
+    products[id].shippingPrice = shippingPrice;
+    this.setState(
+      {
+        productList: products
+      },
+      () => this.saveAll()
+    );
   };
 
   render() {
